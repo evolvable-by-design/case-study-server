@@ -1,0 +1,490 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Aira Project Manager
+  license:
+    name: MIT
+  contact:
+    name: Antoine Cheron
+    url: https://antoinecheron.github.io
+    email: antoine.cheron@irisa.fr
+servers:
+  - url: http://localhost:3000/v1
+paths:
+  /users:
+    post:
+      summary: Creates a new user (admin only)
+      operationId: createUser
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User just created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+  /users/login:
+    post:
+      summary: Login into the application
+      operationId: login
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful connection
+          headers:
+            Authorization:
+              description: Token to use
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginConfirmation'
+        '403':
+          description: 'Wrong credentials'
+  /users/logout:
+    post:
+      summary: Logout
+      operationId: logout
+      tags: 
+        - users
+      responses:
+        '204':
+          description: 'Successfully logged out - revoke token'
+        '500':
+          description: 'Unexpected internal server error, try again'
+  /user/{userId}:
+    # in the future, split this operation into two operations, one for quick view and one for details
+    # if the id of the connected user is retrieved from the token, then a coupling will be created, with the secret
+    parameters: 
+      - name: userId
+        in: path
+        description: Id of the user to retrieve details for
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get a user details
+      operationId: getUserDetails
+      tags:
+        - users
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+  /user/{userId}/password:
+    parameters: 
+      - name: userId
+        in: path
+        description: Id of the user to retrieve details for
+        required: true
+        schema:
+          type: string
+    put:
+      summary: Updates a user's password
+      operationId: updateUserPassword
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordRequest'
+      responses:
+        '204':
+          description: 'Password successfully updated'
+  /projects:
+    get:
+      summary: List the projects that the connected user can see
+      operationId: listProjects
+      tags:
+        - projects
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectsList'
+    post:
+      summary: Creates a project
+      operationId: createProject
+      tags:
+        - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project just created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /project/{projectId}:
+    parameters: 
+        - name: projectId
+          in: path
+          description: Id of the project to retrieve details for
+          required: true
+          schema:
+            type: string
+    get:
+      summary: Get the detail of a project
+      operationId: getProjectDetails
+      tags:
+        - projects
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          links:
+            archive:
+              operationId: archiveProject
+            unarchive:
+              operationId: unarchiveProject
+    delete:
+      summary: Delete a project (only if archived)
+      operationId: deleteProject
+      tags:
+        - projects
+      responses:
+        '204':
+          description: Success
+  /project/{projectId}/archive:
+    put:
+      description: Archive a project
+      operationId: archiveProject
+      tags:
+        - projects
+      parameters: 
+        - name: projectId
+          in: path
+          description: Id of the project to archive
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+  /project/{projectId}/unarchive:
+    put:
+      description: Unarchive a project
+      operationId: unarchiveProject
+      tags:
+        - projects
+      parameters:
+        - name: projectId
+          in: path
+          description: Id of the project to unarchive
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+  /tasks:
+    get:
+      summary: List user tasks
+      operationId: listTasks
+      tags:
+        - tasks
+      parameters:
+        - name: projectId
+          in: query
+          description: The id of the project that the tasks are included in
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success - list of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TasksList'
+  /tasks/technicalStory:
+    post:
+      summary: Creates a technical story
+      operationId: createTechnicalStory
+      tags:
+        - tasks
+      requestBody:
+        description: Technical story to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TechnicalStoryCreationRequest'
+      responses:
+        '201':
+          description: Created technical story
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TechnicalStory'
+  /tasks/userStory:
+    post:
+      summary: Creates a user story
+      operationId: createUserStory
+      tags:
+        - tasks
+      requestBody:
+        description: User story to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserStoryCreationRequest'
+      responses:
+        '201':
+          description: Created user story
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStory'
+  /task/{taskId}:
+    parameters: 
+        - name: taskId
+          in: path
+          description: Id of the task to retrieve details for
+          required: true
+          schema:
+            type: string
+    get:
+      summary: Get the detail of a task
+      operationId: getTaskDetails
+      tags:
+        - tasks
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          links:
+            archive:
+              operationId: archiveTask
+            unarchive:
+              operationId: unarchiveTask
+    delete:
+      summary: Delete a task (only if archived)
+      operationId: deleteTask
+      tags:
+        - tasks
+      responses:
+        '204':
+          description: Success
+  /task/{taskId}/archive:
+    put:
+      description: Archive a task
+      operationId: archiveTask
+      tags:
+        - tasks
+      parameters: 
+        - name: taskId
+          in: path
+          description: Id of the task to archive
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+  /task/{taskId}/unarchive:
+    put:
+      description: Unarchive a task
+      operationId: unarchiveTask
+      tags:
+        - tasks
+      parameters:
+        - name: taskId
+          in: path
+          description: Id of the task to unarchive
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+components:
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CreateUserRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+    UserDetails:
+      type: object
+      properties:
+        username:
+          type: string
+        id:
+          type: string
+          format: url
+        role:
+          $ref: '#/components/schemas/UserRole'
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required: [ 'username', 'password' ]
+    LoginConfirmation:
+      type: object
+      properties:
+        token:
+          type: string
+    UpdatePasswordRequest:
+      type: object
+      properties:
+        previousPassword:
+          type: string
+        newPassword:
+          type: string
+      required: [ previousPassword, newPassword ]
+    CreateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required: [ name ]
+    ProjectsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Project'
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+          format: url
+      required: [ name, id ]
+    TasksList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+    TechnicalStoryCreationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        assignee:
+          type: string
+          format: url
+        projectId:
+          type: string
+          format: url
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+      required: [ name, assignee, projectId ]
+    TechnicalStory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: url
+        name:
+          type: string
+        description:
+          type: string
+        assignee:
+          type: string
+          format: url
+        projectId:
+          type: string
+          format: url
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+      required: [ id, name, description, assignee, projectId ]
+    UserStoryCreationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        assignee:
+          type: string
+          format: url
+        points:
+          type: number
+          format: int8
+        projectId:
+          type: string
+          format: url
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+      required: [ name, assignee, points, projectId ]
+    UserStory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: url
+        name:
+          type: string
+        description:
+          type: string
+        assignee:
+          type: string
+          format: url
+        points:
+          type: number
+          format: int8
+        projectId:
+          type: string
+          format: url
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+      required: [ id, name, description, assignee, points, projectId ]
+    Task:
+      oneOf:
+        - $ref: '#/components/schemas/TechnicalStory'
+        - $ref: '#/components/schemas/UserStory'
+    TaskStatus:
+      type: string
+      enum: [ 'todo', 'in progress', 'review', 'QA', 'done' ]
+    UserRole:
+      type: string
+      enum: 
+        - Product Owner
+        - Developer
