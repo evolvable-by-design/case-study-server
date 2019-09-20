@@ -77,7 +77,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /users/login:
+  /user/login:
     post:
       summary: Login into the application
       operationId: login
@@ -120,7 +120,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /users/logout:
+  /user/logout:
     post:
       summary: Logout
       operationId: logout
@@ -132,6 +132,35 @@ paths:
           description: 'Successfully logged out - revoke token'
         '500':
           description: 'Unexpected internal server error, try again'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security: 
+        - bearerToken: []
+  /user:
+    get:
+      summary: Get a user details
+      operationId: getCurrentUserDetails
+      x-@id: vnd_jeera:getCurrentUserDetails
+      tags:
+        - users
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          links:
+            listProjects:
+              operationId: listProjects
+              x-@relation: vnd_jeera:rel/listProjects
+            changePassword:
+              operationId: updateUserPassword
+              x-@relation: vnd_jeera:rel/changePassword
         default:
           description: unexpected error
           content:
@@ -171,7 +200,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /user/{userId}/password:
+  /user/password:
     parameters: 
       - $ref: '#/components/parameters/userId'
     put:
@@ -881,6 +910,9 @@ components:
         website: # to be removed later on
           type: string
           format: url
+        email:
+          type: string
+          format: email
         role:
           $ref: '#/components/schemas/UserRole'
     UserDetails:
@@ -896,6 +928,9 @@ components:
         website: # to be removed later on
           type: string
           format: url
+        email:
+          type: string
+          format: email
         role:
           $ref: '#/components/schemas/UserRole'
     LoginRequest:
@@ -1146,6 +1181,7 @@ x-@context:
   username: meb:username
   password: ov:passwd
   webpage: schema:mainEntityOfPage
+  email: schema:email
   role:
     x-@id: vnd_jeera:role
     x-@type: vnd_jeera:UserRole
