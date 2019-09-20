@@ -1,60 +1,95 @@
-const uuidv4 = require('uuid/v4');
+const uuid = require('uuid/v4');
 
-const Project = require('../models/Project')
+const Project = require('../models/Project');
+const Errors = require('../utils/errors');
 
 class ProjectService {
 
   constructor(userService) {
-    this.projects = []
+    this.userService = userService;
+    this.projects = [
+      Project.of('1', 'First project ever', true, '1')
+    ]
   }
 
-  list(userId) {
-    return this.projects.filter(project => project.collaborators.includes(userId))
+  list(userId, offset, limit) {
+    const actualOffset = offset || 0;
+    const actualLimit = limit || 3;
+
+    const allRelevantProjects = userId
+      ? this.projects.filter(project => project.collaborators.includes(userId))
+      : this.projects.filter(project => project.isPublic)
+
+    return allRelevantProjects.slice(actualOffset, actualOffset + actualLimit)
   }
 
   findById(id, userId) {
-    return this.project.find(p => p.id === id && p.collaborators.includes(userId));
+    return this.projects.find(p => p.id === id && p.collaborators.includes(userId));
   }
 
-  findByIdPromise(id, userId) {
-    return new Promise(function(resolve, reject) {
-      const project = findById(id, userId);
-      if (project) { resolve(project) } else { reject() }
-    })
+  findByName(name, userId) {
+    return this.projects.find(p => p.name === name && p.collaborators.includes(userId));
   }
 
-  create(name, owner) {
-    const createdProject = new Project(uuidv4(), name, false, Date.now().toISOString(), 0, [owner]);
-    this.projects.push(createdProject);
-    return createdProject;
+  create(name, isPublic, owner) {
+    const maybeDulicatedExistingProject = this.findByName(name, owner);
+
+    if (maybeDulicatedExistingProject) {
+      throw new Errors.BusinessRuleEnforced();
+    } else {
+      const createdProject = Project.of(uuid(), name, isPublic || false, owner);
+      this.projects.push(createdProject);
+      return createdProject;
+    }
   }
 
   delete(id, userId) {
-    findByIdPromise(id, userId)
-      .then(project => this.projects.splice(this.projects.indexOf(project), 1))
+    const project = this.findById(id, userId);
+
+    if (!project) {
+      throw new Errors.NotFound();
+    } else if (!project.isArchived) {
+      throw new Errors.BusinessRuleEnforced();
+    } else {
+      return this.projects.splice(this.projects.indexOf(project), 1);
+    }
   }
 
   archive(id, userId) {
-    findByIdPromise(id, userId)
-      .then(project => project.isArchived = true)
+    this._archive(id, userId, true);
   }
 
   unarchive(id, userId) {
-    findByIdPromise(id, userId)
-      .then(project => project.isArchived = false)
+    this._archive(id, userId, false);
+  }
+
+  _archive(id, userId, value) {
+    const project = this.findById(id, userId);
+
+    if (!project) {
+      throw new Errors.NotFound();
+    } else {
+      project.isArchived = value;
+    }
   }
 
   inviteCollaborators(id, requesterId, collaboratorsIdOrEmail) {
-    findByIdPromise(id, requesterId)
-      .then(project => {
-        const users = Object.assign({}, userService.all()); 
-        project.addCollaborators(collaboratorsIdOrEmail
-          .map(idOrEmail => {
-            users.find(user => user.id === idOrEmail || user.email === idOrEmail)
-          })
-          .filter(entry => entry !== undefined)
-        );
-      });
+    const project = this.findById(id, requesterId);
+
+    if (project) {
+      const users = Array.from(this.userService.all());
+
+      const collaboratorsToAdd = collaboratorsIdOrEmail
+        .map(idOrEmail =>
+          users.find(user => user.id === idOrEmail || user.email === idOrEmail)
+        )
+        .filter(entry => entry !== undefined)
+        .map(user => user.id);
+
+      project.addCollaborators(collaboratorsToAdd);
+    } else {
+      throw new Errors.NotFound();
+    }
   }
 
 }

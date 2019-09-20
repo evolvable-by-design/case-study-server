@@ -1,9 +1,7 @@
-const uuidv4 = require('uuid/v4')
-
 class User {
 
-  constructor(username, password, email, website, role) {
-    this.id = uuidv4();
+  constructor(id, username, password, email, website, role) {
+    this.id = id;
     this.username = username;
     this.email = email;
     this.confirmedEmail = false;

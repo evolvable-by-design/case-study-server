@@ -33,8 +33,7 @@ function handleErrorsGlobally(f, res) {
   try {
     f.apply();
   } catch (error) {
-    console.error(error)
-    res.status(toHttpStatus(error)).json(toHttpMessage(error))
+    res.status(toHttpStatus(error)).json(toHttpMessage(error));
   }
 }
 
@@ -43,6 +42,7 @@ module.exports = {
   WrongCredentialsException,
   BusinessRuleEnforced,
   UnknownEmailConfirmationTokenError,
+  NotFound,
   HttpError,
   handleErrorsGlobally
 }

@@ -1,4 +1,4 @@
-const uuidv4 = require('uuid/v4')
+const uuid = require('uuid/v4')
 
 const AuthService = require('./auth-service')
 
@@ -6,14 +6,14 @@ const UserModule = require('../models/User')
 const User = UserModule.User
 const UserRoles = UserModule.UserRoles
 
-const Errors = require('../errors/Errors')
+const Errors = require('../utils/errors')
 
 class UserService {
 
   constructor() {
     this.users = [
-      new User('AntoineCheron', 'antoine', 'cheron.antoine@gmail.com', null, UserRoles.PO),
-      new User('Foofoo', 'bar', 'foo@bar.com', null, UserRoles.Developer)
+      new User('1', 'AntoineCheron', 'antoine', 'cheron.antoine@gmail.com', null, UserRoles.PO),
+      new User('2', 'Foofoo', 'bar', 'foo@bar.com', null, UserRoles.Developer)
     ]
     this.users.forEach(u => u.confirmEmail())
 
@@ -21,7 +21,7 @@ class UserService {
   }
 
   all() {
-    return this.users.map;
+    return this.users;
   }
 
   _findById(id) {
@@ -50,11 +50,11 @@ class UserService {
       }
 
       const actualRole = role ? role : UserRoles.default;
-      const newUser = new User(username, password, email, website, actualRole);
+      const newUser = new User(uuid(), username, password, email, website, actualRole);
 
       this.users.push(newUser);
 
-      const emailConfirmationToken = uuidv4();
+      const emailConfirmationToken = uuid();
       this.emailConfirmationTokens[emailConfirmationToken] = newUser;
 
       console.log('Confirmation token for email: ' + newUser.email + ' is: ' + emailConfirmationToken);
@@ -99,9 +99,9 @@ class UserService {
   }
 
   logout(token) {
-    AuthService.rejectToken(token)
+    AuthService.rejectToken(token);
   }
 
 }
 
-module.exports = UserService;
+module.exports = new UserService();

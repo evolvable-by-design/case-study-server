@@ -19,15 +19,35 @@ class AuthService {
     });
   }
 
-  static withAuth(req, res, callback) {
-    const authHeader = req.header('Authorization');
-    const authToken = authHeader.replace('Bearer ', '')
+  static withAuth(callback) {
+    return this.withAuthOrElse(callback, (req, res) => res.redirect(401, '/users/login'));
+  }
 
-    if (!authToken || tokensToReject.includes(authToken)) { res.redirect(401, '/users/login') }
+  static withAuthOpt(callback) {
+    return (req, res) => {
+      const authHeader = req.header('Authorization');
+      const authToken = authHeader ? authHeader.replace('Bearer ', '') : undefined
 
-    this.verifyToken(authToken)
-      .then(user => callback(req, res, user))
-      .catch(notUsedErr => res.redirect(401, '/users/login'));
+      if (authToken && tokensToReject.includes(authToken)) {
+        return res.redirect(401, '/users/login');
+      } else if (!authHeader) {
+        return callback(req, res, undefined);
+      } else {
+        return this.verifyToken(authToken)
+          .then(user => callback(req, res, user))
+          .catch(notUsedErr => callback(req, res, undefined));
+      }
+    }
+  }
+
+  static withAuthOrElse(callback, orElse) {
+    return this.withAuthOpt((req, res, user) => {
+      if (user) {
+        return callback(req, res, user)
+      } else {
+        return orElse(req, res)
+      }
+    })
   }
 
   static rejectToken(token) {
