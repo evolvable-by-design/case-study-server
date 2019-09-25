@@ -31,7 +31,7 @@ function toHttpStatus(error) {
 
 function handleErrorsGlobally(f, res) {
   try {
-    f.apply();
+    f();
   } catch (error) {
     res.status(toHttpStatus(error)).json(toHttpMessage(error));
   }

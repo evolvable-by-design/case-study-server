@@ -1,10 +1,23 @@
 const express = require('express');
 
 const { TaskStatus, validateBusinessConstraints } = require('../models/Task');
+const { HypermediaRepresentationBuilder } = require('../hypermedia/hypermedia');
+const HypermediaControls = require('../hypermedia/task');
 const utils = require('./utils');
 const Errors = require('../utils/errors');
 const Responses = require('../utils/responses');
 const AuthService = require('../services/auth-service');
+
+function taskWithHypermediaControls(task) {
+  return HypermediaRepresentationBuilder
+    .of(task)
+    .representation(t => t.taskRepresentation())
+    .link(HypermediaControls.update(task))
+    .link(HypermediaControls.delete(task))
+    .link(HypermediaControls.moveToQa(task), task.status !== TaskStatus.qa)
+    .link(HypermediaControls.complete(task), task.status === TaskStatus.qa)
+    .build();
+}
 
 const taskController = function(projectService, taskService) {
 
@@ -30,7 +43,14 @@ const taskController = function(projectService, taskService) {
     
         res.append('X-Last', basePageUrl + `offset=${amountOfTasks-limit > 0 ? amountOfTasks-limit : 0 }&limit=${limit}`);
     
-        res.status(200).json(tasks.map(t => t.taskRepresentation()));
+        const representation = HypermediaRepresentationBuilder
+          .of(tasks)
+          .representation((t) => t.map(taskWithHypermediaControls))
+          .representation((t) => { return { tasks: t };})
+          .link(HypermediaControls.create(projectId))
+          .build();
+
+        res.status(200).json(representation);
       } else {
         Responses.forbidden(res);
       }
@@ -47,7 +67,7 @@ const taskController = function(projectService, taskService) {
           Responses.badRequest(res);
         } else {
           const createdTask = createFunction(req.body, req.params.projectId);
-          Responses.created(res, createdTask.taskRepresentation());
+          Responses.created(res, taskWithHypermediaControls(createdTask));
         }
       }, res);
     })(req, res);
@@ -66,7 +86,7 @@ const taskController = function(projectService, taskService) {
         const task = taskService.findById(taskId);
 
         if (task) {
-          Responses.ok(res, task.taskRepresentation());
+          Responses.ok(res, taskWithHypermediaControls(task));
         } else {
           Responses.notFound(res);
         }

@@ -2,6 +2,8 @@ var express = require('express');
 
 var utils = require('./utils');
 var Errors = require('../utils/errors');
+const { HypermediaRepresentationBuilder } = require('../hypermedia/hypermedia');
+const HypermediaControls = require('../hypermedia/user');
 var ReverseRouter = require('../reverse-router');
 var AuthService = require('../services/auth-service');
 
@@ -15,8 +17,14 @@ function userController(userService) {
     } else {
       Errors.handleErrorsGlobally(() => {
         const createdUser = userService.create(req.body, user);
-        // TODO add hypermedia controls
-        res.status(201).location(ReverseRouter.forUser(createdUser)).json(createdUser);
+        
+        const representation = HypermediaRepresentationBuilder
+          .of(createdUser)
+          .representation((u) => u.withoutPasswordRepresentation())
+          .link(HypermediaControls.confirmEmail)
+          .build();
+
+        res.status(201).location(ReverseRouter.forUser(createdUser)).json(representation);
       }, res);
     }
   }));
@@ -38,7 +46,15 @@ function userController(userService) {
     } else {
       Errors.handleErrorsGlobally(() => {
         const token = 'Bearer ' + userService.login(req.body.username, req.body.password);
-        res.status(200).send({ token });
+
+        const representation = HypermediaRepresentationBuilder
+          .of({ token })
+          .link(HypermediaControls.logout)
+          .link(HypermediaControls.listProjects)
+          .link(HypermediaControls.getUserDetails)
+          .build();
+
+        res.status(200).send(representation);
       }, res);
     }
   });
@@ -52,7 +68,7 @@ function userController(userService) {
     Errors.handleErrorsGlobally(() => {
       const foundUser = userService.findById(req.params.userId, user.id);
       if (foundUser) {
-        res.status(200).json(foundUser);
+        res.status(200).json(foundUser.publicRepresentation());
       } else {
         res.status(500).json(new Errors.HttpError(500));
       }
@@ -63,7 +79,14 @@ function userController(userService) {
     Errors.handleErrorsGlobally(() => {
       const foundUser = userService.findById(user.id, user.id);
       if (foundUser) {
-        res.status(200).json(foundUser);
+        const representation = HypermediaRepresentationBuilder
+          .of(foundUser)
+          .representation((u) => u.withoutPasswordRepresentation())
+          .link(HypermediaControls.listProjects)
+          .link(HypermediaControls.updateUserPassword)
+          .build();
+
+        res.status(200).json(representation);
       } else {
         res.status(500).json(new Errors.HttpError(500));
       }

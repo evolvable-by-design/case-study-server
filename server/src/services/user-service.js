@@ -30,10 +30,8 @@ class UserService {
 
   findById(id, requesterId) {
     const foundUser = this.users.find(user => user.id === id );
-    if (foundUser && id === requesterId) {
-      return foundUser.withoutPasswordRepresentation();
-    } else if (foundUser) {
-      return foundUser.publicRepresentation();
+    if (foundUser) {
+      return foundUser;
     } else {
       throw new Errors.NotFound
     }
@@ -59,7 +57,7 @@ class UserService {
 
       console.log('Confirmation token for email: ' + newUser.email + ' is: ' + emailConfirmationToken);
 
-      return newUser.withoutPasswordRepresentation();
+      return newUser;
     } else {
       throw new Errors.ForbiddenException()
     }

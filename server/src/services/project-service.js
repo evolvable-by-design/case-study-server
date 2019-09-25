@@ -23,6 +23,13 @@ class ProjectService {
     return allRelevantProjects.slice(actualOffset, actualOffset + actualLimit)
   }
 
+  listPublicProjects(offset, limit) {
+    const actualOffset = offset || 0;
+    const actualLimit = limit || 3;
+
+    return this.projects.filter(project => project.isPublic).slice(actualOffset, actualOffset + actualLimit);
+  }
+
   findById(id, userId) {
     return this.projects.find(p => p.id === id && p.collaborators.includes(userId));
   }
