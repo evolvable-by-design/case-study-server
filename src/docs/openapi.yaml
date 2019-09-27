@@ -9,7 +9,7 @@ info:
     url: https://antoinecheron.github.io
     email: antoine.cheron@irisa.fr
 servers:
-  - url: http://localhost:3000/v1
+  - url: http://localhost:3000/
 paths:
   /users:
     post:
@@ -185,13 +185,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserDetails'
-          links:
-            listProjects:
-              operationId: listProjects
-              x-@relation: vnd_jeera:rel/listProjects
-            changePassword:
-              operationId: updateUserPassword
-              x-@relation: vnd_jeera:rel/changePassword
         default:
           description: unexpected error
           content:
@@ -254,6 +247,14 @@ paths:
             minimum: 1
             maximum: 40
             default: 3
+        - name: public
+          in: query
+          x-@id: vnd_jeera:public
+          description: Should the listed projects be public - listing private projects requires to be logged in
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: 'Success'
@@ -284,18 +285,7 @@ paths:
               $ref: '#/components/schemas/CreateProjectRequest'
       responses:
         '201':
-          description: Project just created
-          headers:
-            Location:
-              description: 'URL to the resource created'
-              schema:
-                type: string
-                format: url
-                x-@type: '@id'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
+          $ref: '#/components/responses/projectDetails'
         default:
           description: unexpected error
           content:
@@ -315,42 +305,7 @@ paths:
         - projects
       responses:
         '200':
-          description: Project details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
-          links:
-            inviteUser:
-              operationId: inviteUsersToProject
-              x-@relation: vnd_jeera:rel/inviteToCollaborate
-              parameters:
-                projectId: '$response.body#/projectId'
-            createTask:
-              operationId: createTask
-              x-@relation: vnd_jeera:rel/create
-              parameters:
-                projectId: '$request.path.projectId'
-            listTasks:
-              operationId: listProjectTasks
-              x-@relation: vnd_jeera:rel/listProjectTasks
-              parameters:
-                projectId: '$request.path.projectId'
-            archive:
-              operationId: archiveProject
-              x-@relation: vnd_jeera:rel/archive
-              parameters:
-                projectId: '$request.path.projectId'
-            unarchive:
-              operationId: unarchiveProject
-              x-@relation: vnd_jeera:rel/unarchive
-              parameters:
-                projectId: '$request.path.projectId'
-            delete:
-              operationId: deleteProject
-              x-@relation: vnd_jeera:rel/delete
-              parameters:
-                projectId: '$request.path.projectId'
+          $ref: '#/components/responses/projectDetails'
         default:
           description: unexpected error
           content:
@@ -871,6 +826,44 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  responses:
+    projectDetails:
+      description: Project details
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Project'
+      links:
+        inviteUser:
+          operationId: inviteUsersToProject
+          x-@relation: vnd_jeera:rel/inviteToCollaborate
+          parameters:
+            projectId: '$response.body#/projectId'
+        createTask:
+          operationId: createTask
+          x-@relation: vnd_jeera:rel/create
+          parameters:
+            projectId: '$response.body#/id'
+        listTasks:
+          operationId: listProjectTasks
+          x-@relation: vnd_jeera:rel/listProjectTasks
+          parameters:
+            projectId: '$response.body#/id'
+        archive:
+          operationId: archiveProject
+          x-@relation: vnd_jeera:rel/archive
+          parameters:
+            projectId: '$response.body#/id'
+        unarchive:
+          operationId: unarchiveProject
+          x-@relation: vnd_jeera:rel/unarchive
+          parameters:
+            projectId: '$response.body#/id'
+        delete:
+          operationId: deleteProject
+          x-@relation: vnd_jeera:rel/delete
+          parameters:
+            projectId: '$response.body#/id'
   parameters:
     userId: 
       name: userId
@@ -960,11 +953,17 @@ components:
       properties:
         name:
           type: string
+        isPublic:
+          type: boolean
+          default: false
       required: [ name ]
     ProjectsList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Project'
+      type: object
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
     Project:
       type: object
       properties:
@@ -975,6 +974,8 @@ components:
           format: uuid
           x-@id: vnd_jeera:projectId
           x-@type: 'mo:uuid'
+        isPublic:
+          type: boolean
         isArchived:
           type: boolean
         lastUpdatedOn:
@@ -988,11 +989,14 @@ components:
           items:
             type: string
             format: uuid
-      required: [ name, id, isArchived, lastUpdatedOn, updatesCount, collaborators ]
+      required: [ name, id, isPublic, isArchived, lastUpdatedOn, updatesCount, collaborators ]
     TasksList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Task'
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
     TechnicalStoryCreationRequest:
       type: object
       properties:
@@ -1049,11 +1053,9 @@ components:
           format: date
         status:
           $ref: '#/components/schemas/TaskStatus'
-        isArchived:
-          type: boolean
         updatesCount:
           type: integer
-      required: [ id, name, projectId, description, assignee, lastUpdate, status, isArchived, updatesCount ]
+      required: [ id, name, projectId, description, assignee, lastUpdate, status, updatesCount ]
     UserStoryCreationRequest:
       type: object
       properties:
@@ -1120,11 +1122,9 @@ components:
           format: date
         status:
           $ref: '#/components/schemas/TaskStatus'
-        isArchived:
-          type: boolean
         updatesCount:
           type: integer
-      required: [ id, name, points, projectId, description, assignee, lastUpdate, status, isArchived, updatesCount ]
+      required: [ id, name, points, projectId, description, assignee, lastUpdate, status, updatesCount ]
     Task:
       oneOf:
         - $ref: '#/components/schemas/TechnicalStory'
@@ -1192,6 +1192,7 @@ x-@context:
   previousPassword: vnd_jeera:previousPassword
   newPassword: vnd_jeera:newPassword
   ProjectsList: vnd_jeera:ProjectsList
+  projects: vnd_jeera:projects
   UserStory: vnd_jeera:UserStory
   UserStoryUpdateRequest: vnd_jeera:UserStoryUpdateRequest
   UserStoryCreationRequest: vnd_jeera:UserStoryCreationRequest
@@ -1209,6 +1210,7 @@ x-@context:
   Task: vnd_jeera:Task
   TaskStatus: vnd_jeera:TaskStatus
   TasksList: vnd_jeera:TasksList
+  tasks: vnd_jeera:tasks
   status: 
     x-@id: vnd_jeera:status
   TaskStatusFreeToMove: vnd_jeera:TaskStatusFreeToMove
