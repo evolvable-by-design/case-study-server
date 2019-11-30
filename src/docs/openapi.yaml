@@ -356,7 +356,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
                 id: '$response.body#/id'
-                name: '$response.body#/name'
+                title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
@@ -430,7 +430,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
                 id: '$response.body#/id'
-                name: '$response.body#/name'
+                title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
@@ -461,7 +461,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /project/{projectId}/invite:
+  /project/{projectId}/addCollaborator:
     post:
       description: Invite users to the project
       operationId: inviteUsersToProject
@@ -644,7 +644,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
                 id: '$response.body#/id'
-                name: '$response.body#/name'
+                title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
@@ -712,7 +712,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
                 id: '$response.body#/id'
-                name: '$response.body#/name'
+                title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
@@ -764,7 +764,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
                 id: '$response.body#/id'
-                name: '$response.body#/name'
+                title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
@@ -804,7 +804,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
                 id: '$response.body#/id'
-                name: '$response.body#/name'
+                title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
@@ -1014,7 +1014,7 @@ components:
     TechnicalStoryCreationRequest:
       type: object
       properties:
-        name:
+        title:
           type: string
           minLength: 3
           maxLength: 140
@@ -1027,11 +1027,11 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
-      required: [ name, assignee ]
+      required: [ title, assignee ]
     TechnicalStoryUpdateRequest:
       type: object
       properties:
-        name:
+        title:
           type: string
           minLength: 3
           maxLength: 140
@@ -1052,7 +1052,7 @@ components:
           format: uuid
           x-@id: vnd_jeera:taskId
           x-@type: 'mo:uuid'
-        name:
+        title:
           type: string
         projectId:
           type: string
@@ -1069,11 +1069,11 @@ components:
           $ref: '#/components/schemas/TaskStatus'
         updatesCount:
           type: integer
-      required: [ id, name, projectId, description, assignee, lastUpdate, status, updatesCount ]
+      required: [ id, title, projectId, description, assignee, lastUpdate, status, updatesCount ]
     UserStoryCreationRequest:
       type: object
       properties:
-        name:
+        title:
           type: string
           minLength: 3
           maxLength: 140
@@ -1090,11 +1090,11 @@ components:
           maximum: 40
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
-      required: [ name, assignee, points ]
+      required: [ title, assignee, points ]
     UserStoryUpdateRequest:
       type: object
       properties:
-        name:
+        title:
           type: string
           minLength: 3
           maxLength: 140
@@ -1119,7 +1119,7 @@ components:
           format: uuid
           x-@id: vnd_jeera:taskId
           x-@type: 'mo:uuid'
-        name:
+        title:
           type: string
         points:
           type: number
@@ -1138,7 +1138,7 @@ components:
           $ref: '#/components/schemas/TaskStatus'
         updatesCount:
           type: integer
-      required: [ id, name, points, projectId, description, assignee, lastUpdate, status, updatesCount ]
+      required: [ id, title, points, projectId, description, assignee, lastUpdate, status, updatesCount ]
     Task:
       oneOf:
         - $ref: '#/components/schemas/TechnicalStory'
@@ -1230,6 +1230,7 @@ x-@context:
     x-@id: vnd_jeera:status
   TaskStatusFreeToMove: vnd_jeera:TaskStatusFreeToMove
   isArchived: vnd_jeera:isArchived
+  title: schema:name
   name: schema:name
   description: schema:description
   lastUpdatedOn: schema:dateModified

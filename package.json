@@ -4,7 +4,7 @@
   "description": "Server of lightweight Jira example used as the evaluation for paper",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/index.js",
+    "start": "node ./src/index.js --inspect",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

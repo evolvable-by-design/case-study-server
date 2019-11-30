@@ -60,9 +60,9 @@ const taskController = function(projectService, taskService) {
   const createTask = function(createFunction) {
     return (req, res) => AuthService.withAuth((req, res, user) => {
       Errors.handleErrorsGlobally(() => {
-        const { name, description, status, assignee } = req.body;
-        if (utils.isAnyEmpty([name, assignee])
-          || !validateBusinessConstraints(name, description, undefined, status)
+        const { title, description, status, assignee } = req.body;
+        if (utils.isAnyEmpty([title, assignee])
+          || !validateBusinessConstraints(title, description, undefined, status)
         ) {
           Responses.badRequest(res);
         } else {
@@ -101,14 +101,14 @@ const taskController = function(projectService, taskService) {
       const projectId = req.params.projectId;
       const taskId = req.params.taskId;
 
-      const { name, description, status, points} = req.body;
+      const { title, description, status, points} = req.body;
       if (!projectService.findById(projectId, user.id)) {
         Responses.forbidden(res);
       } 
       const task = taskService.findById(taskId)
       if (!task) {
         Responses.notFound(res);
-      } else if (!validateBusinessConstraints(task, name, description, points, status)) {
+      } else if (!validateBusinessConstraints(task, title, description, points, status)) {
         Responses.badRequest(res);
       } else {
         taskService.updateTask(taskId, req.body);

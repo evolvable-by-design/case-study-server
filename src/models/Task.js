@@ -1,7 +1,7 @@
 class Task {
-  constructor(id, name, points, projectId, description, assignee, lastUpdate, status, isArchived, updatesCount) {
+  constructor(id, title, points, projectId, description, assignee, lastUpdate, status, isArchived, updatesCount) {
     this.id = id;
-    this.name = name;
+    this.title = title;
     this.points = points;
     this.projectId = projectId;
     this.description = description;
@@ -21,18 +21,18 @@ class Task {
     this.updatesCount++;
   }
 
-  static ofUserStory(id, projectId, name, description, assignee, points, status) {
-    return new Task(id, name, points, projectId, description || '', assignee, new Date(Date.now()), status, false, 0);
+  static ofUserStory(id, projectId, title, description, assignee, points, status) {
+    return new Task(id, title, points, projectId, description || '', assignee, new Date(Date.now()), status, false, 0);
   }
 
-  static ofTechnicalStory(id, projectId, name, description, assignee, status) {
-    return new Task(id, name, undefined, projectId, description, assignee, new Date(Date.now()), status, false, 0);
+  static ofTechnicalStory(id, projectId, title, description, assignee, status) {
+    return new Task(id, title, undefined, projectId, description, assignee, new Date(Date.now()), status, false, 0);
   }
 
   taskRepresentation() {
     const representation = {
       id: this.id,
-      name: this.name,
+      title: this.title,
       projectId: this.projectId,
       description: this.description || '',
       assignee: this.assignee,
@@ -65,8 +65,8 @@ const TaskStatusFreeToMove = {
   review: 'review'
 };
 
-const validateBusinessConstraints = (task, name, description, points, status) => {
-  if (name && (name.length <3 || name.length > 40)) {
+const validateBusinessConstraints = (task, title, description, points, status) => {
+  if (title && (title.length <3 || title.length > 40)) {
     return false;
   } else if (description && description.length > 2000) {
     return false;

@@ -33,6 +33,7 @@ function handleErrorsGlobally(f, res) {
   try {
     f();
   } catch (error) {
+    // console.error(error)
     res.status(toHttpStatus(error)).json(toHttpMessage(error));
   }
 }

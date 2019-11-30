@@ -6,7 +6,7 @@ module.exports = {
     projectId: task.projectId,
     taskId: task.id,
     id: task.id,
-    name: task.name,
+    title: task.title,
     description: task.description,
     assignee: task.assignee,
     points: task.points,
