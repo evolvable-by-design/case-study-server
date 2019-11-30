@@ -40,7 +40,7 @@ function userController(userService) {
     }, res);
   });
 
-  router.post('/users/login', (req, res) => {
+  router.post('/user/login', (req, res) => {
     if (utils.isAnyEmpty([req.body.username, req.body.password])) {
       res.status(400).send(new Errors.HttpError(400));
     } else {
@@ -59,7 +59,7 @@ function userController(userService) {
     }
   });
 
-  router.post('/users/logout', AuthService.withAuth((req, res, user) => {
+  router.post('/user/logout', AuthService.withAuth((req, res, user) => {
     userService.logout(req.header('Authorization'));
     res.status(204).send();
   }));

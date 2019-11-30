@@ -27,7 +27,7 @@ function projectController(projectService) {
   router.get('/projects', AuthService.withAuthOpt((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
       const userId = user ? user.id : undefined;
-      const shouldListPublicProjects = req.query.public || (user !== undefined)
+      const shouldListPublicProjects = req.query.public !== undefined ? (req.query.public === 'true') : user !== undefined
 
       const projects = shouldListPublicProjects
         ? projectService.listPublicProjects(req.query.offset, req.query.limit)

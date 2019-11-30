@@ -16,7 +16,7 @@ class HypermediaRepresentationBuilder {
 
   link(link, predicate) {
     if (predicate === undefined || predicate === true) {
-        this.links.push(link);
+      link instanceof Array ? link.forEach(l => this.links.push(l)) : this.links.push(link)
     }
     return this;
   }

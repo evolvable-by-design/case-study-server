@@ -12,8 +12,8 @@ class UserService {
 
   constructor() {
     this.users = [
-      new User('1', 'AntoineCheron', 'antoine', 'cheron.antoine@gmail.com', null, UserRoles.PO),
-      new User('2', 'Foofoo', 'bar', 'foo@bar.com', null, UserRoles.Developer)
+      new User('f19869bc-a117-4c19-bc12-d907de312632', 'AntoineCheron', 'antoine', 'cheron.antoine@gmail.com', null, UserRoles.PO),
+      new User('cc482007-b04a-45a4-8b1a-836a1528287a', 'Foofoo', 'bar', 'foo@bar.com', null, UserRoles.Developer)
     ]
     this.users.forEach(u => u.confirmEmail())
 

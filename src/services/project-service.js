@@ -8,7 +8,7 @@ class ProjectService {
   constructor(userService) {
     this.userService = userService;
     this.projects = [
-      Project.of('1', 'First project ever', true, '1')
+      Project.of('0e4a7fdb-b97e-42bf-a657-a61d88efb737', 'First project ever', true, 'f19869bc-a117-4c19-bc12-d907de312632')
     ]
   }
 

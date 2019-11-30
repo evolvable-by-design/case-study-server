@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 
-const { Task } = require('../models/Task');
+const { Task, TaskStatus } = require('../models/Task');
 const Errors = require('../utils/errors');
 
 class TaskService {
@@ -8,7 +8,7 @@ class TaskService {
   constructor() {
     this.tasks = [];
 
-    this.createUserStory({ name: 'First task', assignee: '1', status: 'todo', points: 1 }, '1');
+    this.createUserStory({ name: 'First task', assignee: 'f19869bc-a117-4c19-bc12-d907de312632', status: 'todo', points: 1 }, '0e4a7fdb-b97e-42bf-a657-a61d88efb737');
   }
 
   list(projectId, createdAfter, offset, limit) {
@@ -49,13 +49,13 @@ class TaskService {
   }
 
   createTechnicalStory({ name, description, assignee, status }, projectId) {
-    const createdTask = Task.ofTechnicalStory(uuid(), projectId, name, description, assignee, status);
+    const createdTask = Task.ofTechnicalStory(uuid(), projectId, name, description, assignee, status || TaskStatus.todo);
     this.tasks.push(createdTask);
     return createdTask;
   }
 
   createUserStory({ name, description, assignee, status, points }, projectId) {
-    const createdTask = Task.ofUserStory(uuid(), projectId, name, description, assignee, points, status);
+    const createdTask = Task.ofUserStory(uuid(), projectId, name, description, assignee, points, status || TaskStatus.todo);
     this.tasks.push(createdTask);
     return createdTask;
   }

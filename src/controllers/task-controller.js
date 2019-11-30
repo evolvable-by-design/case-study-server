@@ -102,12 +102,14 @@ const taskController = function(projectService, taskService) {
       const taskId = req.params.taskId;
 
       const { name, description, status, points} = req.body;
-      if (!validateBusinessConstraints(name, description, points, status)) {
-        Responses.badRequest(res);
-      } else if (!projectService.findById(projectId, user.id)) {
+      if (!projectService.findById(projectId, user.id)) {
         Responses.forbidden(res);
-      } else if (!taskService.findById(taskId)) {
+      } 
+      const task = taskService.findById(taskId)
+      if (!task) {
         Responses.notFound(res);
+      } else if (!validateBusinessConstraints(task, name, description, points, status)) {
+        Responses.badRequest(res);
       } else {
         taskService.updateTask(taskId, req.body);
         Responses.noContent(res);

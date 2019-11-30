@@ -36,7 +36,7 @@ class Task {
       projectId: this.projectId,
       description: this.description || '',
       assignee: this.assignee,
-      lastUpdate: this.lastUpdate.toISOString(),
+      lastUpdate: this.lastUpdate.toISOString().split('T')[0],
       status: this.status,
       // isArchived: this.isArchived,
       updatesCount: this.updatesCount
@@ -65,12 +65,12 @@ const TaskStatusFreeToMove = {
   review: 'review'
 };
 
-const validateBusinessConstraints = (name, description, points, status) => {
+const validateBusinessConstraints = (task, name, description, points, status) => {
   if (name && (name.length <3 || name.length > 40)) {
     return false;
   } else if (description && description.length > 2000) {
     return false;
-  } else if (status && !Object.values(TaskStatusFreeToMove).includes(status)) {
+  } else if (status && status !== task.status && !Object.values(TaskStatusFreeToMove).includes(status)) {
     return false;
   } else if (points && (points < 0.5 || points > 40)) {
     return false;

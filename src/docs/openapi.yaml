@@ -81,7 +81,7 @@ paths:
     post:
       summary: Login into the application
       operationId: login
-      x-@type: vnd_jeera:login
+      x-@id: vnd_jeera:login
       tags:
         - users
       requestBody:
@@ -374,7 +374,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
             complete:
-              operationId: completeTask
+              operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
@@ -448,7 +448,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
             complete:
-              operationId: completeTask
+              operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
@@ -589,9 +589,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/TasksList'
           links:
-            create:
-              operationId: createTask
-              x-@relation: vng_jeera:rel/create
+            createTechnicalStory:
+              operationId: createTechnicalStory
+              x-@relation: vnd_jeera:rel/create
+              parameters:
+                projectId: '$request.path.projectId'
+            createUserStory:
+              operationId: createUserStory
+              x-@relation: vnd_jeera:rel/create
               parameters:
                 projectId: '$request.path.projectId'
         default:
@@ -657,7 +662,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
             complete:
-              operationId: completeTask
+              operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
@@ -725,7 +730,7 @@ paths:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
             complete:
-              operationId: completeTask
+              operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
@@ -765,7 +770,7 @@ paths:
                 points: '$response.body#/points'
                 status: '$response.body#/status'
             complete:
-              operationId: completeTask
+              operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
@@ -839,8 +844,13 @@ components:
           x-@relation: vnd_jeera:rel/inviteToCollaborate
           parameters:
             projectId: '$response.body#/projectId'
-        createTask:
-          operationId: createTask
+        createTechnicalStory:
+          operationId: createTechnicalStory
+          x-@relation: vnd_jeera:rel/create
+          parameters:
+            projectId: '$response.body#/id'
+        createUserStory:
+          operationId: createUserStory
           x-@relation: vnd_jeera:rel/create
           parameters:
             projectId: '$response.body#/id'
@@ -900,6 +910,7 @@ components:
           type: string
         password:
           type: string
+          format: password
         website: # to be removed later on
           type: string
           format: url
@@ -933,6 +944,7 @@ components:
           type: string
         password:
           type: string
+          format: password
       required: [ 'username', 'password' ]
     LoginConfirmation:
       type: object
@@ -945,8 +957,10 @@ components:
       properties:
         previousPassword:
           type: string
+          format: password
         newPassword:
           type: string
+          format: password
       required: [ previousPassword, newPassword ]
     CreateProjectRequest:
       type: object
@@ -1193,6 +1207,7 @@ x-@context:
   newPassword: vnd_jeera:newPassword
   ProjectsList: vnd_jeera:ProjectsList
   projects: vnd_jeera:projects
+  collaborators: vnd_jeera:collaborators
   UserStory: vnd_jeera:UserStory
   UserStoryUpdateRequest: vnd_jeera:UserStoryUpdateRequest
   UserStoryCreationRequest: vnd_jeera:UserStoryCreationRequest
