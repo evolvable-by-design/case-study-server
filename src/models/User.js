@@ -1,12 +1,11 @@
 class User {
 
-  constructor(id, username, password, email, website, role) {
+  constructor(id, username, password, email, role) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.confirmedEmail = false;
     this.password = password;
-    this.website = website;
     this.role = role;
   }
 
@@ -19,7 +18,6 @@ class User {
       id: this.id,
       username: this.username,
       email: this.email,
-      website: this.website,
       role: this.role
     };
   }

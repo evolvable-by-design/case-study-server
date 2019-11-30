@@ -49,13 +49,13 @@ class TaskService {
   }
 
   createTechnicalStory({ title, description, assignee, status }, projectId) {
-    const createdTask = Task.ofTechnicalStory(uuid(), projectId, title, description, assignee, status || TaskStatus.todo);
+    const createdTask = Task.ofTechnicalStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), status || TaskStatus.todo);
     this.tasks.push(createdTask);
     return createdTask;
   }
 
   createUserStory({ title, description, assignee, status, points }, projectId) {
-    const createdTask = Task.ofUserStory(uuid(), projectId, title, description, assignee, points, status || TaskStatus.todo);
+    const createdTask = Task.ofUserStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), points, status || TaskStatus.todo);
     this.tasks.push(createdTask);
     return createdTask;
   }

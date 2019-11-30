@@ -1,11 +1,12 @@
 class Task {
-  constructor(id, title, points, projectId, description, assignee, lastUpdate, status, isArchived, updatesCount) {
+  constructor(id, title, points, projectId, description, assignee, creationDate, lastUpdate, status, isArchived, updatesCount) {
     this.id = id;
     this.title = title;
     this.points = points;
     this.projectId = projectId;
     this.description = description;
     this.assignee = assignee;
+    this.creationDate = creationDate;
     this.lastUpdate = lastUpdate;
     this.status = status;
     this.isArchived = isArchived;
@@ -21,12 +22,12 @@ class Task {
     this.updatesCount++;
   }
 
-  static ofUserStory(id, projectId, title, description, assignee, points, status) {
-    return new Task(id, title, points, projectId, description || '', assignee, new Date(Date.now()), status, false, 0);
+  static ofUserStory(id, projectId, title, description, assignee, creationDate, points, status) {
+    return new Task(id, title, points, projectId, description || '', assignee, creationDate, new Date(Date.now()), status, false, 0);
   }
 
-  static ofTechnicalStory(id, projectId, title, description, assignee, status) {
-    return new Task(id, title, undefined, projectId, description, assignee, new Date(Date.now()), status, false, 0);
+  static ofTechnicalStory(id, projectId, title, description, assignee, creationDate, status) {
+    return new Task(id, title, undefined, projectId, description, assignee, creationDate, new Date(Date.now()), status, false, 0);
   }
 
   taskRepresentation() {
@@ -36,10 +37,11 @@ class Task {
       projectId: this.projectId,
       description: this.description || '',
       assignee: this.assignee,
+      creationDate: this.creationDate.toISOString().split('T')[0],
       lastUpdate: this.lastUpdate.toISOString().split('T')[0],
       status: this.status,
-      // isArchived: this.isArchived,
       updatesCount: this.updatesCount
+      // isArchived: this.isArchived,
     };
 
     if (this.isUserStory()) {

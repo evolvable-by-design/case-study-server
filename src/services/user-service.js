@@ -41,14 +41,14 @@ class UserService {
     return this.users.find(user => user.username === username || user.email === email) === undefined
   }
 
-  create({username, password, email, website, role}, userCreator) {
+  create({username, password, email, role}, userCreator) {
     if (userCreator && userCreator.role == UserRoles.PO) {
       if (!this.areUsernameAndEmailFree(username, email)) {
         throw new Errors.BusinessRuleEnforced()
       }
 
       const actualRole = role ? role : UserRoles.default;
-      const newUser = new User(uuid(), username, password, email, website, actualRole);
+      const newUser = new User(uuid(), username, password, email, actualRole);
 
       this.users.push(newUser);
 
