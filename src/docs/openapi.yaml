@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 4.0.0
+  version: 5.0.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -492,7 +492,7 @@ paths:
         - bearerToken: []
   # to merge with unarchive
   /project/{projectId}/archive:
-    post:
+    put:
       description: Archive a project
       operationId: archiveProject
       x-@id: vnd_jeera:archiveProject
@@ -512,7 +512,7 @@ paths:
       security: 
         - bearerToken: []
   /project/{projectId}/unarchive:
-    post:
+    put:
       description: Unarchive a project
       operationId: unarchiveProject
       x-@id: vnd_jeera:unarchiveProject

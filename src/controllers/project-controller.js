@@ -86,14 +86,14 @@ function projectController(projectService) {
     }, res)
   }));
 
-  router.post('/project/:id/archive', AuthService.withAuth((req, res, user) => {
+  router.put('/project/:id/archive', AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
       projectService.archive(req.params.id, user.id);
       Responses.noContent(res);
     }, res)
   }));
 
-  router.post('/project/:id/unarchive', AuthService.withAuth((req, res, user) => {
+  router.put('/project/:id/unarchive', AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
       projectService.unarchive(req.params.id, user.id);
       Responses.noContent(res);
