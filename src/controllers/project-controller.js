@@ -77,7 +77,7 @@ function projectController(projectService) {
 
   router.post('/project/:id/addCollaborator', AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
-      if(utils.isEmpty(req.body.users) || !(req.body.users instanceof Array)) {
+      if (utils.isEmpty(req.body.users) || !(req.body.users instanceof Array) || req.body.users.length > 5) {
         Responses.badRequest(res);
       } else {
         projectService.inviteCollaborators(req.params.id, user.id, req.body.users);
