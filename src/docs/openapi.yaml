@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 3.0.0
+  version: 4.0.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -354,31 +354,33 @@ paths:
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
                 status: '$response.body#/status'
+                tags: '$response.body#/tags'
+                priority: '$response.body#/priority'
             delete:
               operationId: deleteProjectTask
               x-@relation: vnd_jeera:rel/delete
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
         default:
           description: unexpected error
           content:
@@ -428,13 +430,15 @@ paths:
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
                 status: '$response.body#/status'
+                tags: '$response.body#/tags'
+                priority: '$response.body#/priority'
             delete:
               operationId: deleteProjectTask
               x-@relation: vnd_jeera:rel/delete
@@ -537,9 +541,9 @@ paths:
       tags:
         - tasks
       parameters:
-        - name: createdAfter
+        - name: createdBefore
           in: query
-          x-@id: vnd_jeera:createdAfter
+          x-@id: vnd_jeera:createdBefore
           description: Minimum date of tasks to list
           required: false
           schema:
@@ -642,31 +646,33 @@ paths:
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
                 status: '$response.body#/status'
+                tags: '$response.body#/tags'
+                priority: '$response.body#/priority'
             delete:
               operationId: deleteProjectTask
               x-@relation: vnd_jeera:rel/delete
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
         default:
           description: unexpected error
           content:
@@ -710,31 +716,33 @@ paths:
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
                 status: '$response.body#/status'
+                tags: '$response.body#/tags'
+                priority: '$response.body#/priority'
             delete:
               operationId: deleteProjectTask
               x-@relation: vnd_jeera:rel/delete
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
         default:
           description: unexpected error
           content:
@@ -762,19 +770,21 @@ paths:
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
                 status: '$response.body#/status'
+                tags: '$response.body#/tags'
+                priority: '$response.body#/priority'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
         default:
           description: unexpected error
           content:
@@ -802,19 +812,21 @@ paths:
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
                 assignee: '$response.body#/assignee'
                 points: '$response.body#/points'
                 status: '$response.body#/status'
+                tags: '$response.body#/tags'
+                priority: '$response.body#/priority'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
+                projectId: '$response.body#/parentProjectId'
         default:
           description: unexpected error
           content:
@@ -1021,6 +1033,13 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 6
+        priority:
+          $ref: '#/components/schemas/Priority'
       required: [ title, assignee ]
     TechnicalStoryUpdateRequest:
       type: object
@@ -1038,6 +1057,13 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 6
+        priority:
+          $ref: '#/components/schemas/Priority'
     TechnicalStory:
       type: object
       properties:
@@ -1048,7 +1074,7 @@ components:
           x-@type: 'mo:uuid'
         title:
           type: string
-        projectId:
+        parentProjectId:
           type: string
           format: uuid
         description:
@@ -1064,9 +1090,15 @@ components:
           format: date
         status:
           $ref: '#/components/schemas/TaskStatus'
+        tags:
+          type: array
+          items:
+            type: string
+        priority:
+          $ref: '#/components/schemas/Priority'
         updatesCount:
           type: integer
-      required: [ id, title, projectId, description, assignee, lastUpdate, status, updatesCount ]
+      required: [ id, title, parentProjectId, description, assignee, lastUpdate, status, updatesCount ]
     UserStoryCreationRequest:
       type: object
       properties:
@@ -1087,6 +1119,13 @@ components:
           maximum: 40
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 6
+        priority:
+          $ref: '#/components/schemas/Priority'
       required: [ title, assignee, points ]
     UserStoryUpdateRequest:
       type: object
@@ -1108,6 +1147,13 @@ components:
           maximum: 40
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 6
+        priority:
+          $ref: '#/components/schemas/Priority'
     UserStory:
       type: object
       properties:
@@ -1120,7 +1166,7 @@ components:
           type: string
         points:
           type: number
-        projectId:
+        parentProjectId:
           type: string
           format: uuid
         description:
@@ -1136,9 +1182,15 @@ components:
           format: date
         status:
           $ref: '#/components/schemas/TaskStatus'
+        tags:
+          type: array
+          items:
+            type: string
+        priority:
+          $ref: '#/components/schemas/Priority'
         updatesCount:
           type: integer
-      required: [ id, title, points, projectId, description, assignee, lastUpdate, status, updatesCount ]
+      required: [ id, title, points, parentProjectId, description, assignee, lastUpdate, status, updatesCount ]
     Task:
       oneOf:
         - $ref: '#/components/schemas/TechnicalStory'
@@ -1149,6 +1201,16 @@ components:
     TaskStatusFreeToMove:
       type: string
       enum: [ 'todo', 'in progress', 'review' ]
+    Priority:
+      type: string
+      enum:
+        - blocking
+        - critical
+        - important
+        - high
+        - medium
+        - low
+        - simple
     UserRole:
       type: string
       enum: 
@@ -1218,6 +1280,9 @@ x-@context:
   projectId: 
     x-@id: vnd_jeera:projectId
     x-@type: '@id'
+  parentProjectId: 
+    x-@id: vnd_jeera:projectId
+    x-@type: '@id'
   taskId: 
     x-@id: vnd_jeera:taskId
     x-@type: '@id'
@@ -1229,6 +1294,11 @@ x-@context:
   status: 
     x-@id: vnd_jeera:status
   TaskStatusFreeToMove: vnd_jeera:TaskStatusFreeToMove
+  tags: vnd_jeera:tags
+  priority: 
+    x-@id: vnd_jeera:priority
+    x-@type: Priority
+  Priority: vnd_jeera:Priority
   isArchived: vnd_jeera:isArchived
   title: schema:name
   name: schema:name

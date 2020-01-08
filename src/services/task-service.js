@@ -11,14 +11,14 @@ class TaskService {
     this.createUserStory({ title: 'First task', assignee: 'f19869bc-a117-4c19-bc12-d907de312632', status: 'todo', points: 1 }, '0e4a7fdb-b97e-42bf-a657-a61d88efb737');
   }
 
-  list(projectId, createdAfter, offset, limit) {
-    return this.listAll(projectId, createdAfter).slice(offset, offset + limit);
+  list(projectId, createdBefore, offset, limit) {
+    return this.listAll(projectId, createdBefore).slice(offset, offset + limit);
   }
 
-  listAll(projectId, createdAfter) {
+  listAll(projectId, createdBefore) {
     return this.tasks.filter(task => 
       task.projectId === projectId
-      //&& (!createdAfter || task.creationDate > createdAfter)
+      && (!createdBefore || task.creationDate < createdBefore)
     );
   }
  
@@ -35,8 +35,8 @@ class TaskService {
     }
   }
 
-  tasksCount(projectId, createdAfter) {
-    return this.listAll(projectId, createdAfter).length;
+  tasksCount(projectId, createdBefore) {
+    return this.listAll(projectId, createdBefore).length;
   }
 
   delete(taskId) {
@@ -48,27 +48,29 @@ class TaskService {
     }
   }
 
-  createTechnicalStory({ title, description, assignee, status }, projectId) {
-    const createdTask = Task.ofTechnicalStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), status || TaskStatus.todo);
+  createTechnicalStory({ title, description, assignee, status, tags, priority }, projectId) {
+    const createdTask = Task.ofTechnicalStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), status || TaskStatus.todo, tags, priority);
     this.tasks.push(createdTask);
     return createdTask;
   }
 
-  createUserStory({ title, description, assignee, status, points }, projectId) {
-    const createdTask = Task.ofUserStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), points, status || TaskStatus.todo);
+  createUserStory({ title, description, assignee, status, points, tags, priority }, projectId) {
+    const createdTask = Task.ofUserStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), points, status || TaskStatus.todo, tags, priority);
     this.tasks.push(createdTask);
     return createdTask;
   }
 
-  updateTask(taskId, { title, description, assignee, status, points }) {
+  updateTask(taskId, { title, description, assignee, status, points, tags, priority }) {
     const task = this.findByIdOrFail(taskId);
     if (title) { task.title = title; }
     if (description) { task.description = description; }
     if (assignee) { task.assignee = assignee; }
     if (status) { task.status = status; }
     if (points && task.isUserStory()) { task.points = points; }
+    if (tags) { task.tags = tags }
+    if (priority) { task.priority = priority }
 
-    if (title || description || assignee || status || points) { task._onUpdate(); }
+    if (title || description || assignee || status || points || tags || priorty) { task._onUpdate(); }
   }
 
   updateStatus(taskId, status) {

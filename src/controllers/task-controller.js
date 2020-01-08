@@ -26,17 +26,17 @@ const taskController = function(projectService, taskService) {
   router.get('/project/:projectId/tasks', AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
       const projectId = req.params.projectId;
-      const createdAfter = req.query.createdAfter;
+      const createdBefore = req.query.createdBefore;
       const offset = req.query.offset || 0;
       const limit = req.query.limit || 3;
   
       if (projectService.findById(projectId, user.id)) {
-        const tasks = taskService.list(projectId, createdAfter ? new Date(createdAfter) : undefined, offset, limit);
+        const tasks = taskService.list(projectId, createdBefore ? new Date(createdBefore) : undefined, offset, limit);
     
         var basePageUrl = `/project/${projectId}/tasks?`;
-        if (createdAfter) { basePageUrl += `createdAfter=${createdAfter}&`; }
+        if (createdBefore) { basePageUrl += `createdBefore=${createdBefore}&`; }
     
-        const amountOfTasks = taskService.tasksCount(projectId, createdAfter);
+        const amountOfTasks = taskService.tasksCount(projectId, createdBefore);
         if (amountOfTasks > offset + limit - 1) {
           res.append('X-Next', basePageUrl + `offset=${offset+limit}&limit=${limit}`);
         }
@@ -60,9 +60,9 @@ const taskController = function(projectService, taskService) {
   const createTask = function(createFunction) {
     return (req, res) => AuthService.withAuth((req, res, user) => {
       Errors.handleErrorsGlobally(() => {
-        const { title, description, status, assignee } = req.body;
+        const { title, description, status, assignee, tags, priority } = req.body;
         if (utils.isAnyEmpty([title, assignee])
-          || !validateBusinessConstraints(title, description, undefined, status)
+          || !validateBusinessConstraints(title, description, undefined, status, tags, priority)
         ) {
           Responses.badRequest(res);
         } else {
@@ -101,14 +101,14 @@ const taskController = function(projectService, taskService) {
       const projectId = req.params.projectId;
       const taskId = req.params.taskId;
 
-      const { title, description, status, points} = req.body;
+      const { title, description, status, points, tags, priority } = req.body;
       if (!projectService.findById(projectId, user.id)) {
         Responses.forbidden(res);
       } 
       const task = taskService.findById(taskId)
       if (!task) {
         Responses.notFound(res);
-      } else if (!validateBusinessConstraints(task, title, description, points, status)) {
+      } else if (!validateBusinessConstraints(task, title, description, points, status, tags, priority)) {
         Responses.badRequest(res);
       } else {
         taskService.updateTask(taskId, req.body);

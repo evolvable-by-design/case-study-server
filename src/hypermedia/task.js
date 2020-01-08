@@ -10,7 +10,9 @@ module.exports = {
     description: task.description,
     assignee: task.assignee,
     points: task.points,
-    status: task.status
+    status: task.status,
+    tags: task.tags,
+    priority: task.priority
   }),
   delete: (task) => Link('delete', { projectId: task.projectId, taskId: task.id }),
   moveToQa: (task) => Link('moveToQA', { projectId: task.projectId, taskId: task.id }),
