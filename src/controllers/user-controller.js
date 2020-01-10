@@ -20,7 +20,7 @@ function userController(userService) {
         
         const representation = HypermediaRepresentationBuilder
           .of(createdUser)
-          .representation((u) => u.withoutPasswordRepresentation())
+          .representation(u => u.withoutPasswordRepresentation())
           .link(HypermediaControls.confirmEmail)
           .build();
 

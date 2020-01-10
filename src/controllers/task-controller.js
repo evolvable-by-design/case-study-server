@@ -16,6 +16,7 @@ function taskWithHypermediaControls(task) {
     .link(HypermediaControls.delete(task))
     .link(HypermediaControls.moveToQa(task), task.status !== TaskStatus.qa)
     .link(HypermediaControls.complete(task), task.status === TaskStatus.qa)
+    .link(HypermediaControls.analytics(task))
     .build();
 }
 

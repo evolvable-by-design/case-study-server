@@ -17,10 +17,12 @@ function projectWithHypermediaControls(project) {
     .link(HypermediaControls.archive(project), !project.isArchived)
     .link(HypermediaControls.unarchive(project), project.isArchived)
     .link(HypermediaControls.delete(project), project.isArchived)
+    .link(HypermediaControls.star(project))
+    .link(HypermediaControls.analytics(project))
     .build();
 }
 
-function projectController(projectService) {
+function projectController(projectService, userService) {
 
   const router = express.Router()
 
@@ -97,6 +99,17 @@ function projectController(projectService) {
     Errors.handleErrorsGlobally(() => {
       projectService.unarchive(req.params.id, user.id);
       Responses.noContent(res);
+    }, res)
+  }));
+
+  router.post('/project/:id/star', AuthService.withAuth((req, res, user) => {
+    Errors.handleErrorsGlobally(() => {
+      if (!projectService.findById(req.params.id, user.id)) {
+        Responses.notFound(res)
+      } else {
+        userService.switchStarredStatus(user.id, req.params.id)
+        Responses.noContent(res);
+      }
     }, res)
   }));
 

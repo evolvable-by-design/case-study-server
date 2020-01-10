@@ -17,6 +17,7 @@ module.exports = {
   delete: (task) => Link('delete', { projectId: task.projectId, taskId: task.id }),
   moveToQa: (task) => Link('moveToQA', { projectId: task.projectId, taskId: task.id }),
   complete: (task) => Link('complete', { projectId: task.projectId, taskId: task.id }),
-  create: (projectId) => Link('create', { projectId })
+  create: (projectId) => Link('create', { projectId }),
+  analytics: (task) => Link('analytics', { resourceId: task.id })
 
 }

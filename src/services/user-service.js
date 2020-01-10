@@ -12,8 +12,8 @@ class UserService {
 
   constructor() {
     this.users = [
-      new User('f19869bc-a117-4c19-bc12-d907de312632', 'AntoineCheron', 'antoine', 'cheron.antoine@gmail.com', null, UserRoles.PO),
-      new User('cc482007-b04a-45a4-8b1a-836a1528287a', 'Foofoo', 'bar', 'foo@bar.com', null, UserRoles.Developer)
+      new User('f19869bc-a117-4c19-bc12-d907de312632', 'AntoineCheron', 'antoine', 'cheron.antoine@gmail.com', UserRoles.PO, []),
+      new User('cc482007-b04a-45a4-8b1a-836a1528287a', 'Foofoo', 'bar', 'foo@bar.com', UserRoles.Developer, [])
     ]
     this.users.forEach(u => u.confirmEmail())
 
@@ -48,7 +48,7 @@ class UserService {
       }
 
       const actualRole = role ? role : UserRoles.default;
-      const newUser = new User(uuid(), username, password, email, actualRole);
+      const newUser = new User(uuid(), username, password, email, actualRole, []);
 
       this.users.push(newUser);
 
@@ -81,6 +81,17 @@ class UserService {
       this.emailConfirmationTokens[maybeMatchingUser] = undefined;
     } else {
       throw new Errors.UnknownEmailConfirmationTokenError();
+    }
+  }
+
+  switchStarredStatus(userId, projectId) {
+    const userInstance = this._findById(userId);
+    
+    const indexOfProjectInStarredList = userInstance.starredProjects.indexOf(projectId)
+    if (indexOfProjectInStarredList !== -1) {
+      delete userInstance.starredProjects[indexOfProjectInStarredList]
+    } else {
+      userInstance.starredProjects.push(projectId)
     }
   }
   

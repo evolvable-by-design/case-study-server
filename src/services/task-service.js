@@ -5,9 +5,10 @@ const Errors = require('../utils/errors');
 
 class TaskService {
 
-  constructor() {
-    this.tasks = [];
-
+  constructor(taskRepository, analyticService) {
+    this.taskRepository = taskRepository
+    this.analyticService = analyticService
+    
     this.createUserStory({ title: 'First task', assignee: 'f19869bc-a117-4c19-bc12-d907de312632', status: 'todo', points: 1 }, '0e4a7fdb-b97e-42bf-a657-a61d88efb737');
   }
 
@@ -16,18 +17,19 @@ class TaskService {
   }
 
   listAll(projectId, createdBefore) {
-    return this.tasks.filter(task => 
+    return this.taskRepository.all().filter(task => 
       task.projectId === projectId
-      && (!createdBefore || task.creationDate < createdBefore)
+      && this.analyticService.findByResourceId(task.id)
+      && (!createdBefore || this.analyticService.findByResourceId(task.id).createdOn < createdBefore)
     );
   }
  
   findById(taskId) {
-    return this.tasks.find(task => task.id === taskId);
+    return this.taskRepository.all().find(task => task.id === taskId);
   }
 
   findByIdOrFail(taskId) {
-    const task = this.tasks.find(task => task.id === taskId);
+    const task = this.taskRepository.all().find(task => task.id === taskId);
     if (task) {
       return task;
     } else {
@@ -42,21 +44,24 @@ class TaskService {
   delete(taskId) {
     const task = this.findByIdOrFail(taskId);
     if (task) {
-      this.tasks.splice(this.tasks.indexOf(task), 1);
+      this.taskRepository.delete(task)
+      this.analyticService.update(task.id)
     } else {
       throw new Errors.BusinessRuleEnforced();
     }
   }
 
   createTechnicalStory({ title, description, assignee, status, tags, priority }, projectId) {
-    const createdTask = Task.ofTechnicalStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), status || TaskStatus.todo, tags, priority);
-    this.tasks.push(createdTask);
+    const createdTask = Task.ofTechnicalStory(uuid(), projectId, title, description, assignee, status || TaskStatus.todo, tags, priority);
+    this.taskRepository.save(createdTask);
+    this.analyticService.create(createdTask.id);
     return createdTask;
   }
 
   createUserStory({ title, description, assignee, status, points, tags, priority }, projectId) {
-    const createdTask = Task.ofUserStory(uuid(), projectId, title, description, assignee, new Date(Date.now()), points, status || TaskStatus.todo, tags, priority);
-    this.tasks.push(createdTask);
+    const createdTask = Task.ofUserStory(uuid(), projectId, title, description, assignee, points, status || TaskStatus.todo, tags, priority);
+    this.taskRepository.save(createdTask);
+    this.analyticService.create(createdTask.id);
     return createdTask;
   }
 
@@ -70,15 +75,15 @@ class TaskService {
     if (tags) { task.tags = tags }
     if (priority) { task.priority = priority }
 
-    if (title || description || assignee || status || points || tags || priorty) { task._onUpdate(); }
+    if (title || description || assignee || status || points || tags || priorty) { this.analyticService.update(taskId); }
   }
 
   updateStatus(taskId, status) {
     const task = this.findByIdOrFail(taskId);
     task.status = status;
-    task._onUpdate();
+    this.analyticService.update(taskId);
   }
 
 }
 
-module.exports = new TaskService();
+module.exports = TaskService;

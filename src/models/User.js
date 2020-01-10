@@ -1,12 +1,13 @@
 class User {
 
-  constructor(id, username, password, email, role) {
+  constructor(id, username, password, email, role, starredProjects) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.confirmedEmail = false;
     this.password = password;
     this.role = role;
+    this.starredProjects = starredProjects || [];
   }
 
   confirmEmail() {

@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 5.1.0
+  version: 6.0.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -381,6 +381,11 @@ paths:
               parameters:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/parentProjectId'
+            analytics:
+              operationId: getAnalytics
+              x-@relation: vnd_jeera:rel/analytics
+              parameters:
+                resourceId: '$response.body#/id'
         default:
           description: unexpected error
           content:
@@ -457,6 +462,31 @@ paths:
               parameters:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/projectId'
+            analytics:
+              operationId: getAnalytics
+              x-@relation: vnd_jeera:rel/analytics
+              parameters:
+                resourceId: '$response.body#/id'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security: 
+        - bearerToken: []
+  /project/{projectId}/star:
+    post:
+      description: Reverse starred status of a project
+      operationId: starProject
+      x-@id: vnd_jeera:starProjectReverse
+      parameters: 
+        - $ref: '#/components/parameters/projectId'
+      tags:
+        - projects
+      responses:
+        '204':
+          description: Success
         default:
           description: unexpected error
           content:
@@ -673,6 +703,11 @@ paths:
               parameters:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/parentProjectId'
+            analytics:
+              operationId: getAnalytics
+              x-@relation: vnd_jeera:rel/analytics
+              parameters:
+                resourceId: '$response.body#/id'
         default:
           description: unexpected error
           content:
@@ -743,6 +778,11 @@ paths:
               parameters:
                 taskId: '$response.body#/id'
                 projectId: '$response.body#/parentProjectId'
+            analytics:
+              operationId: getAnalytics
+              x-@relation: vnd_jeera:rel/analytics
+              parameters:
+                resourceId: '$response.body#/id'
         default:
           description: unexpected error
           content:
@@ -835,6 +875,28 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
+  /analytics/{resourceId}:
+    parameters:
+      - $ref: '#/components/parameters/resourceId'
+    get:
+      description: Get analytics on a resource
+      operationId: getAnalytics
+      x-@id: vnd_jeera:getAnalytics
+      tags:
+        - analytics
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Analytics'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 
 components:
@@ -886,6 +948,16 @@ components:
           x-@relation: vnd_jeera:rel/delete
           parameters:
             projectId: '$response.body#/id'
+        star:
+          operationId: starProject
+          x-@relation: vnd_jeera:rel/starProject
+          parameters:
+            projectId: '$response.body#/id'
+        analytics:
+          operationId: getAnalytics
+          x-@relation: vnd_jeera:rel/analytics
+          parameters:
+            resourceId: '$response.body#/id'
   parameters:
     userId: 
       name: userId
@@ -895,6 +967,8 @@ components:
       required: true
       schema:
         type: string
+        format: url
+        x-@type: '@id'
     taskId:
       name: taskId
       in: path
@@ -903,6 +977,8 @@ components:
       required: true
       schema:
         type: string
+        format: url
+        x-@type: '@id'
     projectId:
       name: projectId
       in: path
@@ -911,6 +987,18 @@ components:
       required: true
       schema:
         type: string
+        format: url
+        x-@type: '@id'
+    resourceId:
+      name: resourceId
+      x-@id: vnd_jeera:appResourceId
+      in: path
+      description: Id of any resource hold by the server
+      required: true
+      schema:
+        type: string
+        format: url
+        x-@type: '@id'
   schemas:
     CreateUserRequest:
       type: object
@@ -943,6 +1031,10 @@ components:
           format: email
         role:
           $ref: '#/components/schemas/UserRole'
+        starredProjects:
+          type: array
+          items:
+            type: string
     LoginRequest:
       type: object
       properties:
@@ -973,6 +1065,9 @@ components:
       properties:
         name:
           type: string
+        isPublic:
+          type: boolean
+          default: false
       required: [ name ]
     ProjectsList:
       type: object
@@ -995,18 +1090,12 @@ components:
           type: boolean
         isArchived:
           type: boolean
-        lastUpdatedOn:
-          type: string
-          format: date
-        updatesCount:
-          type: integer
-          format: int32
         collaborators:
           type: array
           items:
             type: string
             format: uuid
-      required: [ name, id, isPublic, isArchived, lastUpdatedOn, updatesCount, collaborators ]
+      required: [ name, id, isPublic, isArchived, collaborators ]
     TasksList:
       type: object
       properties:
@@ -1079,12 +1168,6 @@ components:
         assignee:
           type: string
           format: uuid
-        creationDate:
-          type: string
-          format: date
-        lastUpdate:
-          type: string
-          format: date
         status:
           $ref: '#/components/schemas/TaskStatus'
         tags:
@@ -1093,9 +1176,7 @@ components:
             type: string
         priority:
           $ref: '#/components/schemas/Priority'
-        updatesCount:
-          type: integer
-      required: [ id, title, parentProjectId, description, assignee, lastUpdate, status, updatesCount ]
+      required: [ id, title, parentProjectId, description, assignee, status ]
     UserStoryCreationRequest:
       type: object
       properties:
@@ -1213,6 +1294,26 @@ components:
       enum: 
         - Product Owner
         - Developer
+    Analytics:
+      type: object
+      properties:
+        resourceId:
+          type: string
+          x-@type: '@id'
+        createdOn:
+          type: string
+          format: date
+        lastUpdatedOn:
+          type: string
+          format: date
+        updatesCount:
+          type: integer
+          format: int32
+      required:
+        - createdOn
+        - lastUpdatedOn
+        - updatesCount
+        - resourceId
     Error:
       type: object
       properties:
@@ -1258,6 +1359,7 @@ x-@context:
   role:
     x-@id: vnd_jeera:role
     x-@type: vnd_jeera:UserRole
+  starredProjects: vnd_jeera:starredProjects
   CreateUserRequest: vnd_jeera:CreateUserRequest
   Project: schema:Project
   CreateProjectRequest: vnd_jeera:CreateProjectRequest
@@ -1300,6 +1402,8 @@ x-@context:
   title: schema:name
   name: schema:name
   description: schema:description
+  Analytics: vnd_jeera:Analytics
+  createdOn: schema:dateCreated
   creationDate: schema:dateCreated
   lastUpdatedOn: schema:dateModified
   lastUpdate: schema:dateModified
