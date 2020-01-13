@@ -1,4 +1,5 @@
 const { Link } = require('./hypermedia');
+const ReverseRouter = require('../reverse-router')
 
 module.exports = {
 
@@ -8,7 +9,7 @@ module.exports = {
     id: task.id,
     title: task.title,
     description: task.description,
-    assignee: task.assignee,
+    assignee: ReverseRouter.forUser(task.assignee),
     points: task.points,
     status: task.status,
     tags: task.tags,

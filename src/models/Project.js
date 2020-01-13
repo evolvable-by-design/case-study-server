@@ -17,6 +17,16 @@ class Project {
     this.collaborators = this.collaborators.filter((v,i) => this.collaborators.indexOf(v) === i)
   }
 
+  representation(reverseRouter) {
+    return {
+      id: this.id,
+      name: this.name,
+      isArchived: this.isArchived,
+      isPublic: this.isPublic,
+      collaborators: this.collaborators.map(collaboratorId => reverseRouter.forUser(collaboratorId))
+    }
+  }
+
 }
 
 module.exports = Project;

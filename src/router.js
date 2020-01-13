@@ -16,6 +16,6 @@ router.use(require('./controllers/documentation'))
 router.use(require('./controllers/user-controller')(userService))
 router.use(require('./controllers/project-controller')(projectService, userService))
 router.use(require('./controllers/task-controller')(projectService, taskService))
-router.use(require('./controllers/analytic-controller')(analyticService))
+router.use(require('./controllers/analytic-controller')(analyticService, projectService, taskService))
 
-module.exports = router;
+module.exports = router

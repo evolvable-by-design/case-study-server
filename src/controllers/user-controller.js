@@ -7,11 +7,13 @@ const HypermediaControls = require('../hypermedia/user');
 var ReverseRouter = require('../reverse-router');
 var AuthService = require('../services/auth-service');
 
+const { USERS_URL, USER_URL } = require('../resources')
+
 function userController(userService) {
 
   var router = express.Router()
 
-  router.post('/users', AuthService.withAuth((req, res, user) => {
+  router.post(`${USERS_URL}`, AuthService.withAuth((req, res, user) => {
     if(utils.isAnyEmpty([req.body.username, req.body.password, req.body.email])) {
       res.status(400).send(new Errors.HttpError(400));
     } else {
@@ -20,16 +22,16 @@ function userController(userService) {
         
         const representation = HypermediaRepresentationBuilder
           .of(createdUser)
-          .representation(u => u.withoutPasswordRepresentation())
+          .representation(u => u.withoutPasswordRepresentation(ReverseRouter))
           .link(HypermediaControls.confirmEmail)
           .build();
 
-        res.status(201).location(ReverseRouter.forUser(createdUser)).json(representation);
+        res.status(201).location(ReverseRouter.forUser(createdUser.id)).json(representation);
       }, res);
     }
   }));
 
-  router.get('/users/confirm', (req, res) => {
+  router.get(`${USERS_URL}/confirm`, (req, res) => {
     if (utils.isEmpty(req.query.token)) {
       res.status(400).send(new Errors.HttpError(400));
     }
@@ -64,7 +66,7 @@ function userController(userService) {
     res.status(204).send();
   }));
 
-  router.get('/user/:userId', AuthService.withAuth((req, res, user) => {
+  router.get(`${USER_URL}`, AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
       const foundUser = userService.findById(req.params.userId, user.id);
       if (foundUser) {
@@ -81,7 +83,7 @@ function userController(userService) {
       if (foundUser) {
         const representation = HypermediaRepresentationBuilder
           .of(foundUser)
-          .representation((u) => u.withoutPasswordRepresentation())
+          .representation((u) => u.withoutPasswordRepresentation(ReverseRouter))
           .link(HypermediaControls.listProjects)
           .link(HypermediaControls.updateUserPassword)
           .build();

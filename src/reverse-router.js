@@ -2,14 +2,21 @@ const Project = require('./models/Project');
 const { User } = require('./models/User');
 const { Task } = require('./models/Task');
 
-module.exports = {
+const ReverseRouter = {
 
-  forUser: function(user) {
-    return '/user/' + user.id
+  forUser: function(userId) {
+    if (userId === undefined) return undefined
+    return '/user/' + userId
   },
 
-  forProject: function(project) {
-    return '/project/' + project.id;
+  forProject: function(projectId) {
+    if (projectId === undefined) return undefined
+    return '/project/' + projectId;
+  },
+
+  forTask: function(taskId, projectId) {
+    if (taskId === undefined || projectId === undefined) return undefined
+    return '/project/' + projectId + '/task/' + taskId
   },
 
   resolve: function(value) {
@@ -23,3 +30,5 @@ module.exports = {
   }
 
 };
+
+module.exports = ReverseRouter

@@ -30,7 +30,7 @@ class CrudRepository {
       const existingElements = element.filter(el => this.elements[el.id] !== undefined)
       existingElements.forEach(el => delete this.elements[el.id])
       return existingElements
-    } else if (this.elements[el.id]) {
+    } else if (this.elements[element.id]) {
       delete this.elements[element.id]
       return element
     } else {

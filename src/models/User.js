@@ -23,9 +23,11 @@ class User {
     };
   }
 
-  withoutPasswordRepresentation() {
+  withoutPasswordRepresentation(reverseRouter) {
     const representation = Object.assign({}, this);
     representation['password'] = undefined;
+    representation['starredProjects'] = this.starredProjects
+      .map(projectId => reverseRouter.forProject(projectId))
     return representation;
   }
 

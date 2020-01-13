@@ -968,7 +968,6 @@ components:
       schema:
         type: string
         format: url
-        x-@type: '@id'
     taskId:
       name: taskId
       in: path
@@ -978,7 +977,6 @@ components:
       schema:
         type: string
         format: url
-        x-@type: '@id'
     projectId:
       name: projectId
       in: path
@@ -988,7 +986,6 @@ components:
       schema:
         type: string
         format: url
-        x-@type: '@id'
     resourceId:
       name: resourceId
       x-@id: vnd_jeera:appResourceId
@@ -998,7 +995,6 @@ components:
       schema:
         type: string
         format: url
-        x-@type: '@id'
   schemas:
     CreateUserRequest:
       type: object
@@ -1035,6 +1031,8 @@ components:
           type: array
           items:
             type: string
+            x-@id: vnd_jeera:projectId
+            x-@type: '@id'
     LoginRequest:
       type: object
       properties:
@@ -1094,7 +1092,7 @@ components:
           type: array
           items:
             type: string
-            format: uuid
+            x-@type: '@id'
       required: [ name, id, isPublic, isArchived, collaborators ]
     TasksList:
       type: object
@@ -1116,7 +1114,7 @@ components:
           maxLength: 4000
         assignee:
           type: string
-          format: uuid
+          x-@type: '@id'
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
         tags:
@@ -1140,7 +1138,7 @@ components:
           maxLength: 4000
         assignee:
           type: string
-          format: uuid
+          x-@type: '@id'
         status:
           $ref: '#/components/schemas/TaskStatusFreeToMove'
         tags:
@@ -1162,12 +1160,12 @@ components:
           type: string
         parentProjectId:
           type: string
-          format: uuid
+          x-@type: '@id'
         description:
           type: string
         assignee:
           type: string
-          format: uuid
+          x-@type: '@id'
         status:
           $ref: '#/components/schemas/TaskStatus'
         tags:
@@ -1190,7 +1188,7 @@ components:
           maxLength: 4000
         assignee:
           type: string
-          format: uuid
+          x-@type: '@id'
         points:
           type: number
           minimum: 0
@@ -1218,7 +1216,7 @@ components:
           maxLength: 4000
         assignee:
           type: string
-          format: uuid
+          x-@type: '@id'
         points:
           type: number
           minimum: 0
@@ -1246,18 +1244,12 @@ components:
           type: number
         parentProjectId:
           type: string
-          format: uuid
+          x-@type: '@id'
         description:
           type: string
         assignee:
           type: string
-          format: uuid
-        creationDate:
-          type: string
-          format: date
-        lastUpdate:
-          type: string
-          format: date
+          x-@type: '@id'
         status:
           $ref: '#/components/schemas/TaskStatus'
         tags:
@@ -1266,9 +1258,7 @@ components:
             type: string
         priority:
           $ref: '#/components/schemas/Priority'
-        updatesCount:
-          type: integer
-      required: [ id, title, points, parentProjectId, description, assignee, lastUpdate, status, updatesCount ]
+      required: [ id, title, points, parentProjectId, description, assignee, status ]
     Task:
       oneOf:
         - $ref: '#/components/schemas/TechnicalStory'
@@ -1404,7 +1394,6 @@ x-@context:
   description: schema:description
   Analytics: vnd_jeera:Analytics
   createdOn: schema:dateCreated
-  creationDate: schema:dateCreated
   lastUpdatedOn: schema:dateModified
   lastUpdate: schema:dateModified
   updatesCount: vnd_jeera:updatesCount
