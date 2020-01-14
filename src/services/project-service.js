@@ -18,7 +18,7 @@ class ProjectService {
 
   list(userId, offset, limit) {
     const actualOffset = offset || 0;
-    const actualLimit = limit || 3;
+    const actualLimit = limit || 5;
 
     return this.projectRepository.all()
       .filter(project => project.collaborators.includes(userId))
