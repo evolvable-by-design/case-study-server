@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 7.0.0
+  version: 7.1.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -594,20 +594,11 @@ paths:
         '200':
           description: Success - list of tasks
           headers:
-            X-Next:
-              description: Link to next page
-              x-@id: hydra:next
-              required: false
+            Link:
+              description: 'Contextually relevant links - provided links all have a rel attribute as recommended here: https://www.w3.org/wiki/LinkHeader'
               schema:
                 type: string
-                format: url
-            X-Last:
-              description: Link to last page
-              x-@id: hydra:last
-              required: false
-              schema:
-                type: string
-                format: url
+                format: link-http-header
           content:
             application/json:
               schema:
@@ -1242,7 +1233,7 @@ components:
           items:
             type: string
         priority:
-          $ref: '#/components/schemas/Priority'        
+          $ref: '#/components/schemas/Priority'
       required: [ id, title, points, parentProjectId, description, assignee, status ]
     Task:
       oneOf:

@@ -41,12 +41,13 @@ const taskController = function(projectService, taskService) {
       if (createdBefore) { basePageUrl += `createdBefore=${createdBefore}&`; }
       if (projectId) { basePageUrl += `queryProjectId=${projectId}&`;}
   
+      let linkHeaderValue = ''
       const amountOfTasks = taskService.tasksCount(projectId, createdBefore);
       if (amountOfTasks > offset + limit - 1) {
-        res.append('X-Next', basePageUrl + `offset=${offset+limit}&limit=${limit}`);
+        linkHeaderValue += `<${basePageUrl}offset=${offset+limit}&limit=${limit}>; rel="hydra:next"`
       }
-  
-      res.append('X-Last', basePageUrl + `offset=${amountOfTasks-limit > 0 ? amountOfTasks-limit : 0 }&limit=${limit}`);
+      linkHeaderValue += `, <${basePageUrl}offset=${amountOfTasks-limit > 0 ? amountOfTasks-limit : 0}&limit=${limit}>; rel="hydra:last"`
+      res.append('Link', linkHeaderValue)
   
       const representation = HypermediaRepresentationBuilder
         .of(tasks)
