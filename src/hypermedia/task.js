@@ -18,6 +18,7 @@ module.exports = {
   moveToQa: (task) => Link('moveToQA', { taskId: task.id }),
   complete: (task) => Link('complete', { taskId: task.id }),
   create: (projectId) => Link('create', { parentProjectId: ReverseRouter.forProject(projectId) }),
-  analytics: (task) => Link('analytics', { resourceId: task.id })
+  analytics: (task) => Link('analytics', { resourceId: task.id }),
+  reverseArchivedState: (task) => Link('reverseArchivedState', { taskId: task.id })
 
 }

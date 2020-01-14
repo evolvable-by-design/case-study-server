@@ -84,6 +84,13 @@ class TaskService {
     this.analyticService.update(taskId);
   }
 
+  switchArchivedStatus(taskId) {
+    const task = this.findByIdOrFail(taskId)
+    task.isArchived = !task.isArchived
+    this.analyticService.update(taskId);
+    return task.isArchived
+  }
+
 }
 
 module.exports = TaskService;

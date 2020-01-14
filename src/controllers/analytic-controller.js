@@ -20,7 +20,7 @@ const analyticController = function(analyticService, projectService, taskService
         Responses.notFound(res)
       } else {
         const representation = maybeAnalytic.representation(ReverseRouter)
-        representation.resourceId = resolveResourceUri(representation.resourceId, projectService, taskService)
+        representation.resourceId = resolveResourceUri(representation.resourceId, user.id, projectService, taskService)
         Responses.ok(res, representation)
       }
     }, res);
@@ -30,8 +30,8 @@ const analyticController = function(analyticService, projectService, taskService
 
 }
 
-function resolveResourceUri(resourceId, projectService, taskService) {
-  const project = projectService.findById(resourceId)
+function resolveResourceUri(resourceId, userId, projectService, taskService) {
+  const project = projectService.findById(resourceId, userId)
   if (project) return ReverseRouter.forProject(resourceId)
 
   const task = taskService.findById(resourceId)

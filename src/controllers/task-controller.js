@@ -20,6 +20,7 @@ function taskWithHypermediaControls(task) {
     .link(HypermediaControls.moveToQa(task), task.status !== TaskStatus.qa)
     .link(HypermediaControls.complete(task), task.status === TaskStatus.qa)
     .link(HypermediaControls.analytics(task))
+    .link(HypermediaControls.reverseArchivedState(task))
     .build();
 }
 
@@ -129,11 +130,19 @@ const taskController = function(projectService, taskService) {
     }, res);
   }));
 
-  router.put(`${TASK_URL}/complete`, AuthService.withAuth((req, res, user) => {
+  router.put(`${TASK_URL}/complete`, AuthService.withAuth((req, res) => {
     Errors.handleErrorsGlobally(() => {
       const taskId = req.params.taskId;
       taskService.updateStatus(taskId, TaskStatus.complete);
       Responses.noContent(res);
+    }, res);
+  }));
+
+  router.post(`${TASK_URL}/archive`, AuthService.withAuth((req, res) => {
+    Errors.handleErrorsGlobally(() => {
+      const taskId = req.params.taskId;
+      const newArchivedState = taskService.switchArchivedStatus(taskId);
+      Responses.ok(res, { isArchived: newArchivedState });
     }, res);
   }));
 

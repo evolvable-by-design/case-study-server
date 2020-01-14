@@ -78,21 +78,14 @@ class ProjectService {
   }
 
   archive(id, userId) {
-    this._archive(id, userId, true);
-  }
-
-  unarchive(id, userId) {
-    this._archive(id, userId, false);
-  }
-
-  _archive(id, userId, value) {
     const project = this.findById(id, userId);
 
     if (!project) {
       throw new Errors.NotFound();
     } else {
-      project.isArchived = value;
+      project.isArchived = !project.isArchived;
       this.analyticService.update(project.id);
+      return project.isArchived;
     }
   }
 
