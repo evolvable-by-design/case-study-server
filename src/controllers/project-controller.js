@@ -30,14 +30,9 @@ function projectController(projectService, userService) {
 
   const router = express.Router()
 
-  router.get(`${PROJECTS_URL}`, AuthService.withAuthOpt((req, res, user) => {
+  router.get(`${PROJECTS_URL}`, AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
-      const userId = user ? user.id : undefined;
-      const shouldListPublicProjects = req.query.public !== undefined ? (req.query.public === 'true') : user !== undefined
-
-      const projects = shouldListPublicProjects
-        ? projectService.listPublicProjects(req.query.offset, req.query.limit)
-        : projectService.list(userId, req.query.offset, req.query.limit);
+      const projects = projectService.list(user.id, req.query.offset, req.query.limit);
       
       const representation = HypermediaRepresentationBuilder
         .of(projects)
@@ -55,7 +50,7 @@ function projectController(projectService, userService) {
       if(utils.isEmpty(req.body.name)) {
         res.status(400).send(new Errors.HttpError(400));
       } else {
-        const newProject = projectService.create(req.body.name, req.body.isPublic, user.id);
+        const newProject = projectService.create(req.body.name, user.id);
         res.status(201)
           .location(ReverseRouter.forProject(newProject.id))
           .json(projectWithHypermediaControls(newProject));

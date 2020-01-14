@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 7.2.0
+  version: 8.0.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -223,6 +223,8 @@ paths:
       summary: List the projects that the connected user can see
       operationId: listProjects
       x-@id: vnd_jeera:listProjects
+      security:
+        - bearerToken: []
       tags:
         - projects
       parameters:
@@ -247,14 +249,6 @@ paths:
             minimum: 1
             maximum: 40
             default: 3
-        - name: public
-          in: query
-          x-@id: vnd_jeera:public
-          description: Should the listed projects be public - listing private projects requires to be logged in
-          required: false
-          schema:
-            type: boolean
-            default: false
       responses:
         '200':
           description: 'Success'
@@ -1033,9 +1027,6 @@ components:
       properties:
         name:
           type: string
-        isPublic:
-          type: boolean
-          default: false
       required: [ name ]
     ProjectsList:
       type: object
@@ -1054,8 +1045,6 @@ components:
           format: uuid
           x-@id: vnd_jeera:projectId
           x-@type: 'mo:uuid'
-        isPublic:
-          type: boolean
         isArchived:
           type: boolean
         collaborators:
@@ -1063,7 +1052,7 @@ components:
           items:
             type: string
             x-@type: '@id'
-      required: [ name, id, isPublic, isArchived, collaborators ]
+      required: [ name, id, isArchived, collaborators ]
     TasksList:
       type: object
       properties:

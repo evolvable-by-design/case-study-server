@@ -1,15 +1,14 @@
 class Project {
 
-  constructor(id, name, isArchived, isPublic, collaborators) {
+  constructor(id, name, isArchived, collaborators) {
     this.id = id;
     this.name = name;
     this.isArchived = isArchived;
-    this.isPublic = isPublic;
     this.collaborators = collaborators;
   }
 
-  static of(id, name, isPublic, creatorId) {
-    return new Project(id, name, false, isPublic, [creatorId]);
+  static of(id, name, creatorId) {
+    return new Project(id, name, false, [creatorId]);
   }
 
   addCollaborators(collaborators) {
@@ -22,7 +21,6 @@ class Project {
       id: this.id,
       name: this.name,
       isArchived: this.isArchived,
-      isPublic: this.isPublic,
       collaborators: this.collaborators.map(collaboratorId => reverseRouter.forUser(collaboratorId))
     }
   }

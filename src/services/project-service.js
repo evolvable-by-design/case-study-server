@@ -11,7 +11,7 @@ class ProjectService {
     this.analyticService = analyticService
 
     this.projectRepository.save(
-      Project.of('0e4a7fdb-b97e-42bf-a657-a61d88efb737', 'First project ever', true, 'f19869bc-a117-4c19-bc12-d907de312632')
+      Project.of('0e4a7fdb-b97e-42bf-a657-a61d88efb737', 'First project ever', 'f19869bc-a117-4c19-bc12-d907de312632')
     )
     this.analyticService.create('0e4a7fdb-b97e-42bf-a657-a61d88efb737')
   }
@@ -20,19 +20,9 @@ class ProjectService {
     const actualOffset = offset || 0;
     const actualLimit = limit || 3;
 
-    const allRelevantProjects = userId
-      ? this.projectRepository.all().filter(project => project.collaborators.includes(userId))
-      : this.projectRepository.all().filter(project => project.isPublic)
-
-    return allRelevantProjects.slice(actualOffset, actualOffset + actualLimit)
-  }
-
-  listPublicProjects(offset, limit) {
-    const actualOffset = offset || 0;
-    const actualLimit = limit || 3;
-
     return this.projectRepository.all()
-      .filter(project => project.isPublic).slice(actualOffset, actualOffset + actualLimit);
+      .filter(project => project.collaborators.includes(userId))
+      .slice(actualOffset, actualOffset + actualLimit)
   }
 
   findById(id, userId) {
@@ -61,13 +51,13 @@ class ProjectService {
       find(p => p.name === name && p.collaborators.includes(userId)) !== undefined;
   }
 
-  create(name, isPublic, owner) {
+  create(name, owner) {
     const maybeDulicatedExistingProject = this.existsWithName(name, owner);
 
     if (maybeDulicatedExistingProject) {
       throw new Errors.BusinessRuleEnforced();
     } else {
-      const createdProject = Project.of(uuid(), name, isPublic || false, owner);
+      const createdProject = Project.of(uuid(), name, owner);
       this.projectRepository.save(createdProject);
       this.analyticService.create(createdProject.id);
       return createdProject;
