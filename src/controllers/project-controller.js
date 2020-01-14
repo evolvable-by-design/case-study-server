@@ -66,11 +66,7 @@ function projectController(projectService, userService) {
   router.get(`${PROJECT_URL}`, AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
       const project = projectService.findById(req.params.id, user.id);
-      if (project) {
-        Responses.ok(res, projectWithHypermediaControls(project));
-      } else {
-        Responses.notFound(res);
-      }
+      Responses.ok(res, projectWithHypermediaControls(project));
     }, res)
   }));
 
@@ -116,12 +112,9 @@ function projectController(projectService, userService) {
 
   router.post(`${PROJECT_URL}/star`, AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
-      if (!projectService.findById(req.params.id, user.id)) {
-        Responses.notFound(res)
-      } else {
-        userService.switchStarredStatus(user.id, req.params.id)
-        Responses.noContent(res);
-      }
+      const project = projectService.findById(req.params.id, user.id)
+      userService.switchStarredStatus(user.id, project.id)
+      Responses.noContent(res);
     }, res)
   }));
 

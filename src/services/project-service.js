@@ -36,17 +36,33 @@ class ProjectService {
   }
 
   findById(id, userId) {
-    return this.projectRepository.all()
-      .find(p => p.id === id && p.collaborators.includes(userId));
+    const project = this.projectRepository.all().find(p => p.id === id);
+
+    if (project === undefined) {
+      throw new Errors.NotFound()
+    } else if (project.collaborators.includes(userId)) {
+      return project
+    } else {
+      throw new Errors.ForbiddenException()
+    }
   }
 
-  findByName(name, userId) {
+  existsWithId(id, userId) {
+    try {
+      this.findById(id, userId)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
+  existsWithName(name, userId) {
     return this.projectRepository.all().
-      find(p => p.name === name && p.collaborators.includes(userId));
+      find(p => p.name === name && p.collaborators.includes(userId)) !== undefined;
   }
 
   create(name, isPublic, owner) {
-    const maybeDulicatedExistingProject = this.findByName(name, owner);
+    const maybeDulicatedExistingProject = this.existsWithName(name, owner);
 
     if (maybeDulicatedExistingProject) {
       throw new Errors.BusinessRuleEnforced();

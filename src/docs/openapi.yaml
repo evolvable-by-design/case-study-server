@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 6.0.0
+  version: 7.0.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -331,13 +331,12 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /project/{projectId}/task/{taskId}:
+  /task/{taskId}:
     parameters: 
-      - $ref: '#/components/parameters/projectId'
       - $ref: '#/components/parameters/taskId'
     get:
       summary: Get the detail of a task
-      operationId: getProjectTaskDetails
+      operationId: getTaskDetails
       x-@id: vnd_jeera:getTaskDetails
       tags:
         - tasks
@@ -350,11 +349,10 @@ paths:
                 $ref: '#/components/schemas/Task'
           links:
             update:
-              operationId: updateProjectTask
+              operationId: updateTask
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
@@ -364,23 +362,20 @@ paths:
                 tags: '$response.body#/tags'
                 priority: '$response.body#/priority'
             delete:
-              operationId: deleteProjectTask
+              operationId: deleteTask
               x-@relation: vnd_jeera:rel/delete
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             analytics:
               operationId: getAnalytics
               x-@relation: vnd_jeera:rel/analytics
@@ -394,8 +389,8 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       summary: Delete a task (only if archived)
-      operationId: deleteProjectTask
-      x-@id: vnd_jeera:deleteProjectTask
+      operationId: deleteTask
+      x-@id: vnd_jeera:deleteTask
       tags:
         - tasks
       responses:
@@ -411,8 +406,8 @@ paths:
         - bearerToken: []
     put:
       summary: Update some fields of the task
-      operationId: updateProjectTask
-      x-@id: vnd_jeera:updateProjectTask
+      operationId: updateTask
+      x-@id: vnd_jeera:updateTask
       tags:
         - tasks
       requestBody:
@@ -431,11 +426,10 @@ paths:
                 $ref: '#/components/schemas/Task'
           links:
             update:
-              operationId: updateProjectTask
+              operationId: updateTask
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
@@ -445,23 +439,20 @@ paths:
                 tags: '$response.body#/tags'
                 priority: '$response.body#/priority'
             delete:
-              operationId: deleteProjectTask
+              operationId: deleteTask
               x-@relation: vnd_jeera:rel/delete
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/projectId'
             analytics:
               operationId: getAnalytics
               x-@relation: vnd_jeera:rel/analytics
@@ -561,16 +552,15 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /project/{projectId}/tasks:
-    parameters: 
-        - $ref: '#/components/parameters/projectId'
+  /tasks:
     get:
-      summary: List user tasks for a given project
-      operationId: listProjectTasks
+      summary: List user tasks
+      operationId: listTasks
       x-@id: vnd_jeera:listTasks
       tags:
         - tasks
       parameters:
+        - $ref: '#/components/parameters/queryProjectId'
         - name: createdBefore
           in: query
           x-@id: vnd_jeera:createdBefore
@@ -626,13 +616,9 @@ paths:
             createTechnicalStory:
               operationId: createTechnicalStory
               x-@relation: vnd_jeera:rel/create
-              parameters:
-                projectId: '$request.path.projectId'
             createUserStory:
               operationId: createUserStory
               x-@relation: vnd_jeera:rel/create
-              parameters:
-                projectId: '$request.path.projectId'
         default:
           description: unexpected error
           content:
@@ -641,9 +627,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /project/{projectId}/tasks/technicalStory:
-    parameters: 
-        - $ref: '#/components/parameters/projectId'
+  /tasks/technicalStory:
     post:
       summary: Creates a technical story
       operationId: createTechnicalStory
@@ -672,11 +656,10 @@ paths:
                 $ref: '#/components/schemas/TechnicalStory'
           links:
             update:
-              operationId: updateProjectTask
+              operationId: updateTask
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
@@ -686,23 +669,20 @@ paths:
                 tags: '$response.body#/tags'
                 priority: '$response.body#/priority'
             delete:
-              operationId: deleteProjectTask
+              operationId: deleteTask
               x-@relation: vnd_jeera:rel/delete
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             analytics:
               operationId: getAnalytics
               x-@relation: vnd_jeera:rel/analytics
@@ -716,9 +696,7 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /project/{projectId}/tasks/userStory:
-    parameters: 
-      - $ref: '#/components/parameters/projectId'
+  /tasks/userStory:
     post:
       summary: Creates a user story
       operationId: createUserStory
@@ -747,11 +725,10 @@ paths:
                 $ref: '#/components/schemas/UserStory'
           links:
             update:
-              operationId: updateProjectTask
+              operationId: updateTask
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
@@ -761,23 +738,20 @@ paths:
                 tags: '$response.body#/tags'
                 priority: '$response.body#/priority'
             delete:
-              operationId: deleteProjectTask
+              operationId: deleteTask
               x-@relation: vnd_jeera:rel/delete
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             moveToQA:
               operationId: toQATask
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             complete:
               operationId: toDoneTask
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
             analytics:
               operationId: getAnalytics
               x-@relation: vnd_jeera:rel/analytics
@@ -791,9 +765,8 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /project/{projectId}/task/{taskId}/toQa:
+  /task/{taskId}/toQa:
     parameters: 
-      - $ref: '#/components/parameters/projectId'
       - $ref: '#/components/parameters/taskId'
     put:
       description: Place the task in QA status
@@ -806,11 +779,11 @@ paths:
           description: Success
           links:
             modify:
-              operationId: updateProjectTask
+              operationId: updateTask
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
+                parentProjectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
@@ -824,7 +797,6 @@ paths:
               x-@relation: vnd_jeera:rel/completeTask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
         default:
           description: unexpected error
           content:
@@ -833,9 +805,8 @@ paths:
                 $ref: "#/components/schemas/Error"
       security: 
         - bearerToken: []
-  /project/{projectId}/task/{taskId}/complete:
+  /task/{taskId}/complete:
     parameters: 
-      - $ref: '#/components/parameters/projectId'
       - $ref: '#/components/parameters/taskId'
     put:
       description: Place the task in done status
@@ -848,11 +819,11 @@ paths:
           description: Success
           links:
             modify:
-              operationId: updateProjectTask
+              operationId: updateTask
               x-@relation: vnd_jeera:rel/modify
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
+                parentProjectId: '$response.body#/parentProjectId'
                 id: '$response.body#/id'
                 title: '$response.body#/title'
                 description: '$response.body#/description'
@@ -866,7 +837,6 @@ paths:
               x-@relation: vnd_jeera:rel/toQATask
               parameters:
                 taskId: '$response.body#/id'
-                projectId: '$response.body#/parentProjectId'
         default:
           description: unexpected error
           content:
@@ -929,10 +899,10 @@ components:
           parameters:
             projectId: '$response.body#/id'
         listTasks:
-          operationId: listProjectTasks
+          operationId: listTasks
           x-@relation: vnd_jeera:rel/listProjectTasks
           parameters:
-            projectId: '$response.body#/id'
+            queryProjectId: '$response.body#/id'
         archive:
           operationId: archiveProject
           x-@relation: vnd_jeera:rel/archive
@@ -980,6 +950,15 @@ components:
     projectId:
       name: projectId
       in: path
+      x-@id: vnd_jeera:projectId
+      description: Id of the project to retrieve details for
+      required: true
+      schema:
+        type: string
+        format: url
+    queryProjectId:
+      name: queryProjectId
+      in: query
       x-@id: vnd_jeera:projectId
       description: Id of the project to retrieve details for
       required: true
@@ -1108,6 +1087,9 @@ components:
           type: string
           minLength: 4
           maxLength: 80
+        parentProjectId:
+          type: string
+          format: url
         description:
           type: string
           minLength: 0
@@ -1182,6 +1164,9 @@ components:
           type: string
           minLength: 4
           maxLength: 80
+        parentProjectId:
+          type: string
+          format: url
         description:
           type: string
           minLength: 0
@@ -1257,7 +1242,7 @@ components:
           items:
             type: string
         priority:
-          $ref: '#/components/schemas/Priority'
+          $ref: '#/components/schemas/Priority'        
       required: [ id, title, points, parentProjectId, description, assignee, status ]
     Task:
       oneOf:

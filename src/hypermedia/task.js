@@ -4,7 +4,6 @@ const ReverseRouter = require('../reverse-router')
 module.exports = {
 
   update: (task) => Link('update', {
-    projectId: task.projectId,
     taskId: task.id,
     id: task.id,
     title: task.title,
@@ -15,10 +14,10 @@ module.exports = {
     tags: task.tags,
     priority: task.priority
   }),
-  delete: (task) => Link('delete', { projectId: task.projectId, taskId: task.id }),
-  moveToQa: (task) => Link('moveToQA', { projectId: task.projectId, taskId: task.id }),
-  complete: (task) => Link('complete', { projectId: task.projectId, taskId: task.id }),
-  create: (projectId) => Link('create', { projectId }),
+  delete: (task) => Link('delete', { taskId: task.id }),
+  moveToQa: (task) => Link('moveToQA', { taskId: task.id }),
+  complete: (task) => Link('complete', { taskId: task.id }),
+  create: (projectId) => Link('create', { parentProjectId: ReverseRouter.forProject(projectId) }),
   analytics: (task) => Link('analytics', { resourceId: task.id })
 
 }

@@ -9,7 +9,7 @@ class TaskService {
     this.taskRepository = taskRepository
     this.analyticService = analyticService
     
-    this.createUserStory({ title: 'First task', assignee: 'f19869bc-a117-4c19-bc12-d907de312632', status: 'todo', points: 1 }, '0e4a7fdb-b97e-42bf-a657-a61d88efb737');
+    this.createUserStory({ title: 'First task', assignee: 'f19869bc-a117-4c19-bc12-d907de312632', status: 'todo', points: 1, parentProjectId: '0e4a7fdb-b97e-42bf-a657-a61d88efb737' });
   }
 
   list(projectId, createdBefore, offset, limit) {
@@ -18,7 +18,7 @@ class TaskService {
 
   listAll(projectId, createdBefore) {
     return this.taskRepository.all().filter(task => 
-      task.projectId === projectId
+      projectId === undefined || task.projectId === projectId
       && this.analyticService.findByResourceId(task.id)
       && (!createdBefore || this.analyticService.findByResourceId(task.id).createdOn < createdBefore)
     );
@@ -51,15 +51,15 @@ class TaskService {
     }
   }
 
-  createTechnicalStory({ title, description, assignee, status, tags, priority }, projectId) {
-    const createdTask = Task.ofTechnicalStory(uuid(), projectId, title, description, assignee, status || TaskStatus.todo, tags, priority);
+  createTechnicalStory({ title, description, assignee, status, tags, priority, parentProjectId }) {
+    const createdTask = Task.ofTechnicalStory(uuid(), parentProjectId, title, description, assignee, status || TaskStatus.todo, tags, priority);
     this.taskRepository.save(createdTask);
     this.analyticService.create(createdTask.id);
     return createdTask;
   }
 
-  createUserStory({ title, description, assignee, status, points, tags, priority }, projectId) {
-    const createdTask = Task.ofUserStory(uuid(), projectId, title, description, assignee, points, status || TaskStatus.todo, tags, priority);
+  createUserStory({ title, description, assignee, status, points, tags, priority, parentProjectId }) {
+    const createdTask = Task.ofUserStory(uuid(), parentProjectId, title, description, assignee, points, status || TaskStatus.todo, tags, priority);
     this.taskRepository.save(createdTask);
     this.analyticService.create(createdTask.id);
     return createdTask;

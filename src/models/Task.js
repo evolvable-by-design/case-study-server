@@ -70,7 +70,7 @@ const Priority = {
   critical: 'critical'
 }
 
-const validateBusinessConstraints = (task, title, description, points, status, tags, priority) => {
+const validateBusinessConstraints = (task, title, description, points, status, tags, priority, parentProjectId) => {
   if (title && (title.length < 4 || title.length > 80)) {
     return false;
   } else if (description && description.length > 4000) {

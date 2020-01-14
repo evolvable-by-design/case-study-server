@@ -1,14 +1,15 @@
 const { Link } = require('./hypermedia');
+const ReverseRouter = require('../reverse-router')
 
 module.exports = {
 
   createProject: 'createProject',
   inviteUser: (project) => Link('inviteUser', { projectId: project.id }),
   createTask: (project) => [
-    Link('createTechnicalStory', { projectId: project.id }),
-    Link('createUserStory', { projectId: project.id })
+    Link('createTechnicalStory', { parentProjectId: ReverseRouter.forProject(project.id) }),
+    Link('createUserStory', { parentProjectId: ReverseRouter.forProject(project.id) })
   ],
-  listTasks: (project) => Link('listTasks', { projectId: project.id }),
+  listTasks: (project) => Link('listTasks', { queryProjectId: project.id }),
   archive: (project) => Link('archive', { projectId: project.id }),
   unarchive: (project) => Link('unarchive', { projectId: project.id }),
   delete: (project) => Link('delete', { projectId: project.id }),
