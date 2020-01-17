@@ -31,11 +31,24 @@ const analyticController = function(analyticService, projectService, taskService
 }
 
 function resolveResourceUri(resourceId, userId, projectService, taskService) {
-  const project = projectService.findById(resourceId, userId)
+  const project = notFoundExceptionToUndefined(
+    () => projectService.findById(resourceId, userId))
   if (project) return ReverseRouter.forProject(resourceId)
 
   const task = taskService.findById(resourceId)
   if (task) return ReverseRouter.forTask(resourceId, task.projectId)
+}
+
+function notFoundExceptionToUndefined(f) {
+  try {
+     return f()
+  } catch (error) {
+    if (error instanceof Errors.NotFound) {
+      return undefined
+    } else {
+      throw error
+    }
+  }
 }
 
 module.exports = analyticController;

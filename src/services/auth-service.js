@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
 const secret = "fdfbb8b9-8db4-43b9-9f7c-a15b6d9423c9";
-const signinAlgorithmOptions = { algorithm: 'HS256', expiresIn: '1h' };
+const signinAlgorithmOptions = { algorithm: 'HS256', expiresIn: '8h' };
 
 const tokensToReject = [];
 
