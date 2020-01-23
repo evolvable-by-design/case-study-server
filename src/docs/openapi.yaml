@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 9.0.0
+  version: 9.1.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -12,6 +12,21 @@ servers:
   - url: http://localhost:3000/
 paths:
   /users:
+    get:
+      summary: List existing users public information
+      operationId: listUsers
+      x-@id: vnd_jeera:listUsers
+      tags:
+        - users
+      responses:
+        '200':
+          description: All existing users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailsList'
+      security: 
+        - bearerToken: []
     post:
       summary: Creates a new user (admin only)
       operationId: createUser
@@ -1065,6 +1080,10 @@ components:
           format: email
         role:
           $ref: '#/components/schemas/UserRole'
+    UserDetailsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserDetails'
     UserDetails:
       type: object
       properties:
