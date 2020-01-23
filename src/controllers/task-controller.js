@@ -155,12 +155,12 @@ function replaceRelationUrlsWithTechnicalIds(object) {
 
   if (toReturn['assignee']) {
     const ids = TechnicalIdsExtractor.extractUserIdParams(toReturn['assignee'])
-    toReturn['assignee'] = ids ? ids.userId : undefined
+    if (ids) { toReturn['assignee'] = ids.userId }
   }
 
   if (toReturn['parentProjectId']) {
     const ids = TechnicalIdsExtractor.extractProjectIdParams(toReturn['parentProjectId'])
-    toReturn['parentProjectId'] = ids ? ids.id : undefined
+    if (ids) { toReturn['parentProjectId'] = ids.id }
   }
 
   return toReturn

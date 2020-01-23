@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 9.1.0
+  version: 10.0.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -1391,14 +1391,8 @@ components:
           x-@id: vnd_jeera:projectUsers
           # x-@type: schema:ItemList
           items:
-            oneOf:
-              - type: string
-                format: uuid
-                x-@type: 'mo:uuid'
-              - type: string
-                format: email
-                # x-@id would be userEmail
-                x-@type: schema:email
+            type: string
+            x-@type: 'vnd_jeera:userId'
           minItems: 1
           maxItems: 5
 # json-LD context
