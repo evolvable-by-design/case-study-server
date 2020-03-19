@@ -12,7 +12,7 @@ module.exports = {
   },
 
   _error: function(code, res) {
-    res.status(code).json(Errors.HttpError(code));
+    res.status(code).json(Errors.toHttpMessage(code));
   },
 
   ok: function(res, body) {

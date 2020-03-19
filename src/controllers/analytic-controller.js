@@ -17,7 +17,7 @@ const analyticController = function(analyticService, projectService, taskService
       const maybeAnalytic = analyticService.findByResourceId(resourceId)
 
       if (!maybeAnalytic) {
-        Responses.notFound(res)
+        throw new Errors.NotFound()
       } else {
         const representation = maybeAnalytic.representation(ReverseRouter)
         representation.resourceId = resolveResourceUri(representation.resourceId, projectService, taskService)

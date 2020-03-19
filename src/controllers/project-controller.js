@@ -80,7 +80,7 @@ function projectController(projectService, userService) {
   router.post(`${PROJECT_URL}/addCollaborator`, AuthService.withAuth((req, res, user) => {
     Errors.handleErrorsGlobally(() => {
       if (utils.isEmpty(req.body.users) || !(req.body.users instanceof Array) || req.body.users.length > 5) {
-        Responses.badRequest(res);
+        throw new Errors.BusinessRuleEnforced()
       } else {
         const users = req.body.users.map(user => {
           if (user.indexOf('@') === -1) { // user is an email address

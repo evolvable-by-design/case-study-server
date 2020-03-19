@@ -72,7 +72,7 @@ function userController(userService) {
       if (foundUser) {
         res.status(200).json(foundUser.publicRepresentation());
       } else {
-        res.status(500).json(new Errors.HttpError(500));
+        throw new Error()
       }
     }, res);
   }));
@@ -90,7 +90,7 @@ function userController(userService) {
 
         res.status(200).json(representation);
       } else {
-        res.status(500).json(new Errors.HttpError(500));
+        throw new Error()
       }
     }, res);
   }));

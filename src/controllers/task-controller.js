@@ -70,7 +70,7 @@ const taskController = function(projectService, taskService) {
           || !validateBusinessConstraints(undefined, title, description, points, status, tags, priority)
           || !projectService.existsWithId(parentProjectId, user.id)
         ) {
-          Responses.badRequest(res);
+          throw new Errors.BusinessRuleEnforced()
         } else {
           const createdTask = createFunction(cleanedBodyValues);
           Responses.created(res, taskWithHypermediaControls(createdTask));
@@ -91,7 +91,7 @@ const taskController = function(projectService, taskService) {
       if (task) {
         Responses.ok(res, taskWithHypermediaControls(task));
       } else {
-        Responses.notFound(res);
+        throw new Errors.NotFound()
       }
     }, res);
   }));
@@ -103,9 +103,9 @@ const taskController = function(projectService, taskService) {
       const { title, description, status, points, tags, priority } = req.body;
       const task = taskService.findById(taskId)
       if (!task) {
-        Responses.notFound(res);
+        throw new Errors.NotFound()
       } else if (!validateBusinessConstraints(task, title, description, points, status, tags, priority)) {
-        Responses.badRequest(res);
+        throw new Errors.BusinessRuleEnforced()
       } else {
         taskService.updateTask(taskId, replaceRelationUrlsWithTechnicalIds(req.body));
         Responses.noContent(res);
