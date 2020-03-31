@@ -15,12 +15,12 @@ const analyticController = function(analyticService, projectService, taskService
     Errors.handleErrorsGlobally(() => {
       const resourceId = req.params.resourceId;
       const maybeAnalytic = analyticService.findByResourceId(resourceId)
-
+      
       if (!maybeAnalytic) {
         Responses.notFound(res)
       } else {
         const representation = maybeAnalytic.representation(ReverseRouter)
-        representation.resourceId = resolveResourceUri(representation.resourceId, projectService, taskService)
+        representation.resourceId = resolveResourceUri(representation.resourceId, projectService, taskService, user.id)
         Responses.ok(res, representation)
       }
     }, res);
@@ -30,8 +30,8 @@ const analyticController = function(analyticService, projectService, taskService
 
 }
 
-function resolveResourceUri(resourceId, projectService, taskService) {
-  const project = projectService.findById(resourceId)
+function resolveResourceUri(resourceId, projectService, taskService, userId) {
+  const project = projectService.findById(resourceId, userId)
   if (project) return ReverseRouter.forProject(resourceId)
 
   const task = taskService.findById(resourceId)
