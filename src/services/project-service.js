@@ -25,6 +25,12 @@ class ProjectService {
       .slice(actualOffset, actualOffset + actualLimit)
   }
 
+  count(userId) {
+    return this.projectRepository.all()
+      .filter(project => project.collaborators.includes(userId))
+      .length
+  }
+
   findById(id, userId) {
     const project = this.projectRepository.all().find(p => p.id === id);
 
