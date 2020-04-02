@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 9.1.0
+  version: 9.2.0
   title: Jeera Project Manager
   license:
     name: MIT
@@ -269,20 +269,11 @@ paths:
         '200':
           description: 'Success'
           headers:
-            X-Next:
-              description: Link to next page
-              x-@id: hydra:next
-              required: false
+            Link:
+              description: 'Contextually relevant links - provided links all have a rel attribute as recommended here: https://www.w3.org/wiki/LinkHeader'
               schema:
                 type: string
-                format: url
-            X-Last:
-              description: Link to last page
-              x-@id: hydra:last
-              required: false
-              schema:
-                type: string
-                format: url
+                format: link-http-header
           content:
             application/json:
               schema:
@@ -1132,10 +1123,6 @@ components:
           format: email
         role:
           $ref: '#/components/schemas/UserRole'
-    UserDetailsList:
-      type: array
-      items:
-        $ref: '#/components/schemas/UserDetails'
     UserDetails:
       type: object
       properties:
@@ -1471,6 +1458,7 @@ x-@context:
   meb: 'http://rdf.myexperiment.org/ontologies/base/'
   ov: 'http://open.vocab.org/terms/'
   mo: 'http://purl.org/ontology/mo/'
+  hydra: 'http://www.w3.org/ns/hydra/core#'
   vnd_jeera: 'https://github.com/loosely-coupled-API/jeera_vocabulary/blob/master/vocab.ttl#'
   LoginConfirmation: vnd_jeera:LoginConfirmation
   username: meb:username
@@ -1482,7 +1470,6 @@ x-@context:
     x-@type: vnd_jeera:UserRole
   starredProjects: vnd_jeera:starredProjects
   CreateUserRequest: vnd_jeera:CreateUserRequest
-  UserDetails: vnd_jeera:UserDetails
   Project: schema:Project
   CreateProjectRequest: vnd_jeera:CreateProjectRequest
   UpdatePasswordRequest: vnd_jeera:UpdatePasswordRequest

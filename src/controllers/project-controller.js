@@ -41,12 +41,14 @@ function projectController(projectService, userService) {
         .link(HypermediaControls.createProject)
         .build();
 
+      let linkHeaderValue = ''
       const amountOfProjects = projectService.count(user.id)
       if (amountOfProjects > offset + limit - 1) {
-        res.append('X-Next', `${PROJECTS_URL}?offset=${offset+limit}&limit=${limit}`);
+        linkHeaderValue += `<${PROJECTS_URL}?offset=${offset+limit}&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#next">`
       }
 
-      res.append('X-Last', `${PROJECTS_URL}?offset=${amountOfProjects-limit > 0 ? amountOfProjects-limit : 0 }&limit=${limit}`)
+      linkHeaderValue += `<${PROJECTS_URL}?offset=${amountOfProjects-limit > 0 ? amountOfProjects-limit : 0 }&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#last">`
+      res.append('Link', linkHeaderValue)
       
       res.status(200).json(representation);
     }, res);
