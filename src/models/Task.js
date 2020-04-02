@@ -29,9 +29,11 @@ class Task {
       id: this.id,
       title: this.title,
       parentProjectId: reverseRouter.forProject(this.projectId),
-      description: this.description || '',
-      assignee: reverseRouter.forUser(this.assignee),
-      status: this.status,
+      details: {
+        description: this.description || '',
+        assignee: reverseRouter.forUser(this.assignee),
+        status: this.status
+      },
       tags: this.tags,
       priority: this.priority,
       isArchived: this.isArchived
