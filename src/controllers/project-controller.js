@@ -7,6 +7,7 @@ const Errors = require('../utils/errors');
 const Responses = require('../utils/responses');
 const ReverseRouter = require('../reverse-router');
 const { TechnicalIdsExtractor } = require('../utils/router-utils')
+const { concatStringReducer } = require('../utils/js-utils')
 const AuthService = require('../services/auth-service');
 
 const { PROJECTS_URL, PROJECT_URL } = require('../resources')
@@ -41,14 +42,14 @@ function projectController(projectService, userService) {
         .link(HypermediaControls.createProject)
         .build();
 
-      let linkHeaderValue = ''
+      const linkHeaderValues = []
       const amountOfProjects = projectService.count(user.id)
       if (amountOfProjects > offset + limit - 1) {
-        linkHeaderValue += `<${PROJECTS_URL}?offset=${offset+limit}&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#next">`
+        linkHeaderValues.push(`<${PROJECTS_URL}?offset=${offset+limit}&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#next">`)
       }
 
-      linkHeaderValue += `<${PROJECTS_URL}?offset=${amountOfProjects-limit > 0 ? amountOfProjects-limit : 0 }&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#last">`
-      res.append('Link', linkHeaderValue)
+      linkHeaderValues.push(`<${PROJECTS_URL}?offset=${amountOfProjects-limit > 0 ? amountOfProjects-limit : 0 }&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#last">`)
+      res.append('Link', linkHeaderValues.reduce(concatStringReducer(',')))
       
       res.status(200).json(representation);
     }, res);

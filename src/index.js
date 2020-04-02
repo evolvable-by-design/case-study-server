@@ -10,7 +10,7 @@ app.use(cors({
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
   preflightContinue: true,
-  exposedHeaders: [ 'X-Next', 'X-Last' ]
+  exposedHeaders: [ 'X-Next', 'X-Last', 'Link' ]
 }));
 app.use(require('./router'));
 
