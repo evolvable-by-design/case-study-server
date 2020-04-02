@@ -2,6 +2,7 @@ const uuid = require('uuid/v4');
 
 const Project = require('../models/Project');
 const Errors = require('../utils/errors');
+const { UserRoles } = require('../models/User')
 
 class ProjectService {
 
@@ -70,8 +71,12 @@ class ProjectService {
     }
   }
 
-  delete(id, userId) {
-    const project = this.findById(id, userId);
+  delete(id, user) {
+    if (user.role !== UserRoles.PO) {
+      throw new Errors.ForbiddenException()
+    }
+
+    const project = this.findById(id, user.id);
 
     if (!project) {
       throw new Errors.NotFound()

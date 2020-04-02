@@ -2,6 +2,7 @@ const uuid = require('uuid/v4');
 
 const { Task, TaskStatus } = require('../models/Task');
 const Errors = require('../utils/errors');
+const { UserRoles } = require('../models/User')
 
 class TaskService {
 
@@ -41,7 +42,11 @@ class TaskService {
     return this.listAll(projectId, createdBefore).length;
   }
 
-  delete(taskId) {
+  delete(taskId, user) {
+    if (user.role !== UserRoles.PO) {
+      throw new Errors.ForbiddenException()
+    }
+
     const task = this.findByIdOrFail(taskId);
     if (task) {
       this.taskRepository.delete(task)
