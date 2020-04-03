@@ -1123,6 +1123,10 @@ components:
           format: email
         role:
           $ref: '#/components/schemas/UserRole'
+    UserDetailsList:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserDetails'
     UserDetails:
       type: object
       properties:
