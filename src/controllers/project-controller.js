@@ -45,10 +45,10 @@ function projectController(projectService, userService) {
       const linkHeaderValues = []
       const amountOfProjects = projectService.count(user.id)
       if (amountOfProjects > offset + limit - 1) {
-        linkHeaderValues.push(`<${PROJECTS_URL}?offset=${offset+limit}&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#next">`)
+        linkHeaderValues.push(`<${PROJECTS_URL}?offset=${offset+limit}&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#next"; operationId=listProjects>`)
       }
 
-      linkHeaderValues.push(`<${PROJECTS_URL}?offset=${amountOfProjects-limit > 0 ? amountOfProjects-limit : 0 }&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#last">`)
+      linkHeaderValues.push(`<${PROJECTS_URL}?offset=${amountOfProjects-limit > 0 ? amountOfProjects-limit : 0 }&limit=${limit}; rel="http://www.w3.org/ns/hydra/core#last"; operationId=listProjects>`)
       res.append('Link', linkHeaderValues.reduce(concatStringReducer(',')))
       
       res.status(200).json(representation);
